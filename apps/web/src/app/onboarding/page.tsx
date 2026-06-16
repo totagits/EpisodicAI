@@ -14,7 +14,8 @@ import {
   Loader2, 
   HelpCircle,
   FileCode,
-  Film
+  Film,
+  Play
 } from 'lucide-react';
 
 export default function OnboardingWizard() {

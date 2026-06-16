@@ -26,8 +26,16 @@ import {
 import TimelineEditor from '@/components/TimelineEditor';
 import StoryGraph from '@/components/StoryGraph';
 import { Shot } from '@episodic-ai/types';
+const seedPricing = [
+  { id: 'p1', providerName: 'fal.ai', modelName: 'Luma-DreamMachine', capability: 'video-generation', costUnit: 'second', costPerUnit: 2.0 },
+  { id: 'p2', providerName: 'fal.ai', modelName: 'Kling-v1', capability: 'video-generation', costUnit: 'second', costPerUnit: 1.5 },
+  { id: 'p3', providerName: 'ElevenLabs', modelName: 'TTS-Multilingual-v2', capability: 'text-to-speech', costUnit: 'character', costPerUnit: 0.05 },
+  { id: 'p4', providerName: 'OpenAI', modelName: 'gpt-4o', capability: 'llm', costUnit: 'token', costPerUnit: 0.01 },
+  { id: 'p5', providerName: 'MockAI', modelName: 'MockImageGen-v2', capability: 'image-generation', costUnit: 'image', costPerUnit: 0.2 },
+  { id: 'p6', providerName: 'MockAI', modelName: 'MockVideoGen-v2', capability: 'video-generation', costUnit: 'second', costPerUnit: 1.0 }
+];
 
-export default function CreatorDashboard() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -722,5 +730,13 @@ export default function CreatorDashboard() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function CreatorDashboard() {
+  return (
+    <React.Suspense fallback={<div className="h-screen bg-[#05060b] flex items-center justify-center text-xs text-gray-500">Loading Workspace...</div>}>
+      <DashboardContent />
+    </React.Suspense>
   );
 }
