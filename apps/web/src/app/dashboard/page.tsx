@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
   Sparkles, 
   Film, 
@@ -365,6 +366,12 @@ function DashboardContent() {
           >
             Deposit Credits
           </button>
+          <Link 
+            href="/"
+            className="w-full text-center text-xs font-bold py-2 bg-red-950/20 border border-red-900/30 rounded hover:bg-red-950/40 text-red-400 transition flex items-center justify-center gap-1.5 mt-2"
+          >
+            <LogOut className="w-3.5 h-3.5" /> Logout to Home
+          </Link>
         </div>
       </aside>
 

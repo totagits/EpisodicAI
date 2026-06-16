@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
   Sparkles, 
   ArrowRight, 
@@ -154,7 +155,11 @@ export default function OnboardingWizard() {
       <div className="w-full max-w-3xl rounded-xl border border-brand-border glass-panel overflow-hidden shadow-2xl flex flex-col min-h-[550px]">
         {/* Header Progress Tracker */}
         <div className="bg-brand-card/90 border-b border-brand-border py-4 px-6 flex justify-between items-center">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <Link href="/" className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-white font-bold uppercase transition">
+              <ArrowLeft className="w-3.5 h-3.5" /> Home
+            </Link>
+            <span className="text-gray-700">|</span>
             <span className="font-extrabold text-brand-cyan tracking-tight">EpisodicAI Onboarding</span>
           </div>
           <div className="text-xs font-semibold text-gray-400">

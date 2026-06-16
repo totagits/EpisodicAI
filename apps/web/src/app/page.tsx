@@ -15,12 +15,20 @@ import {
   Workflow, 
   Database,
   BarChart3,
-  FlameKindling
+  FlameKindling,
+  Users
 } from 'lucide-react';
 
 export default function MarketingLandingPage() {
   const [activeTab, setActiveTab] = useState<'bible' | 'season' | 'rendering' | 'router'>('bible');
   const [demoLogIndex, setDemoLogIndex] = useState(0);
+
+  // --- Cost Router Simulator State ---
+  const [routerCategory, setRouterCategory] = useState<'action' | 'dialogue' | 'ambient'>('action');
+  
+  // --- Pricing Calculator State ---
+  const [calcEpisodes, setCalcEpisodes] = useState(4);
+  const [calcTier, setCalcTier] = useState<'standard' | 'high' | 'ultra'>('high');
 
   const demoLogs = [
     { time: "12:04:10", service: "CanonLibrarian", text: "Verified screenplay scene 4 continuity: 0 contradictions found.", color: "text-brand-cyan" },
@@ -37,8 +45,53 @@ export default function MarketingLandingPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Cost router stats simulation
+  const getRouterData = () => {
+    switch (routerCategory) {
+      case 'action':
+        return {
+          shotType: "Action Hero Shot (Close Up of Hover Jump)",
+          selectedProvider: "fal.ai / Luma-DreamMachine",
+          costSec: 2.0,
+          qualityScore: "96/100",
+          expectedMargin: "78%",
+          reason: "Prioritized highest temporal motion fidelity over budget; gross margin remains above the 55% warning threshold."
+        };
+      case 'dialogue':
+        return {
+          shotType: "Dialogue Close Up (Leo Warning Luna)",
+          selectedProvider: "MockAI / talking-character + ElevenLabs",
+          costSec: 0.8,
+          qualityScore: "88/100",
+          expectedMargin: "91%",
+          reason: "Fitted talking-character animation with lip-sync overlay, saving 72% in credits versus full 3D video generation."
+        };
+      case 'ambient':
+        return {
+          shotType: "Establishing Scene (Workshop Exterior Parallax)",
+          selectedProvider: "MockAI / ImageGen + Parallax Still Layer",
+          costSec: 0.2,
+          qualityScore: "92/100",
+          expectedMargin: "97%",
+          reason: "Routed to 2D image generator with CSS viewport pan overlay. Clean layout, zero-video cost."
+        };
+    }
+  };
+
+  const routerData = getRouterData();
+
+  // Pricing calculator math
+  const getCalculatedPrice = () => {
+    const baseCreditsPerEpisode = calcTier === 'standard' ? 40 : calcTier === 'high' ? 80 : 150;
+    const creditsUsed = baseCreditsPerEpisode * calcEpisodes;
+    const priceUSD = creditsUsed * 0.5; // $0.50 per credit
+    return { creditsUsed, priceUSD };
+  };
+
+  const calcResult = getCalculatedPrice();
+
   return (
-    <div className="relative min-h-screen sky-grid">
+    <div className="relative min-h-screen bg-brand-bg text-white sky-grid">
       {/* Navbar */}
       <nav className="sticky top-0 z-50 glass-panel border-b border-brand-border py-4 px-6 md:px-12 flex justify-between items-center">
         <div className="flex items-center gap-3">
@@ -52,7 +105,7 @@ export default function MarketingLandingPage() {
           <a href="#pricing" className="hover:text-brand-cyan transition">Pricing</a>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/onboarding" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md border border-brand-violet hover:bg-brand-violet/10 text-brand-violet transition">
+          <Link href="/signin" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md border border-brand-violet hover:bg-brand-violet/10 text-brand-violet transition">
             Sign In
           </Link>
           <Link href="/onboarding" className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-bold rounded-md bg-gradient-to-r from-brand-violet to-brand-violet/90 hover:from-brand-violet hover:to-brand-cyan text-white shadow-lg shadow-brand-violet/20 hover:shadow-brand-cyan/20 transition">
@@ -169,10 +222,66 @@ export default function MarketingLandingPage() {
         </div>
       </header>
 
-      {/* Interactive Feature Demonstration Section */}
+      {/* 1. FEATURES SECTION */}
+      <section id="features" className="max-w-7xl mx-auto px-6 md:px-12 py-20 border-t border-brand-border/40">
+        <div className="text-center space-y-4 mb-16">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white">Platform Core Features</h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            EpisodicAI enforces the strict multi-layered continuity rules required to keep complex narratives scaling autonomously.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            {
+              title: "Series Canon Fact Lock",
+              desc: "Chronological ledger tracking character conditions, facts, and relationships. Stops characters acting on information they haven't learned.",
+              icon: Database
+            },
+            {
+              title: "Character Identity Safeguards",
+              desc: "Maintains lock on facial features, key outfits, and heights across different scenes, preventing image and video drift.",
+              icon: Users
+            },
+            {
+              title: "Acoustic Voice Continuity",
+              desc: "Synchronizes persistent voice models and ambient acoustics, ensuring sound effects and dialogue maintain spatial consistency.",
+              icon: Cpu
+            },
+            {
+              title: "Automated Profit Router",
+              desc: "Dynamically audits shot-level cost estimates, routing requests to optimal providers to enforce minimum 40%+ profit margins.",
+              icon: Coins
+            },
+            {
+              title: "Timeline Chronology Checker",
+              desc: "Uses a state-machine parser to verify the physical sequence of events, flagging logic breaks like characters being in two places at once.",
+              icon: Sliders
+            },
+            {
+              title: "Rights, Safety & License Ledger",
+              desc: "Ensures all generated audio-visual elements are cleared against copyright, maintaining consent, and safety compliance policies.",
+              icon: ShieldCheck
+            }
+          ].map((feat, index) => {
+            const Icon = feat.icon;
+            return (
+              <div key={index} className="p-6 rounded-xl border border-brand-border bg-brand-card hover:border-brand-violet/50 hover:shadow-lg hover:shadow-brand-violet/5 transition duration-300 space-y-4">
+                <div className="w-10 h-10 rounded bg-brand-violet/10 border border-brand-violet/30 flex items-center justify-center text-brand-violet">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <h3 className="text-lg font-bold text-white">{feat.title}</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">{feat.desc}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 2. HOW IT WORKS SECTION */}
       <section id="workflow" className="max-w-7xl mx-auto px-6 md:px-12 py-20 border-t border-brand-border/40">
         <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white">How the Show operating System Works</h2>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white">How the Show Operating System Works</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
             EpisodicAI bridges the gap between creative writing and automatic production, ensuring no plot holes or visual drifts occur.
           </p>
@@ -317,8 +426,255 @@ export default function MarketingLandingPage() {
         </div>
       </section>
 
+      {/* 3. COST ROUTER SECTION */}
+      <section id="router" className="max-w-7xl mx-auto px-6 md:px-12 py-20 border-t border-brand-border/40">
+        <div className="text-center space-y-4 mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white">Cost-Aware Router Simulator</h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Test the router's decision logic live. Select a shot category to watch the provider routing and margin calculations update instantly.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* Controls */}
+          <div className="lg:col-span-5 space-y-4">
+            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Select Shot Category</h4>
+            
+            {[
+              { id: 'action', title: "High-Action Hero Shot", desc: "Prioritizes temporal motion & camera pan" },
+              { id: 'dialogue', title: "Dialogue / Conversation", desc: "Prioritizes audio sync & character speaking models" },
+              { id: 'ambient', title: "Establishing B-Roll Scene", desc: "Prioritizes background detail & slow parallax" }
+            ].map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setRouterCategory(cat.id as any)}
+                className={`w-full text-left p-4 rounded-lg border transition duration-200 flex flex-col gap-1 ${
+                  routerCategory === cat.id 
+                    ? 'border-brand-violet bg-brand-violet/10 text-white' 
+                    : 'border-brand-border bg-brand-card hover:bg-brand-border/30 text-gray-300'
+                }`}
+              >
+                <span className="font-bold text-sm">{cat.title}</span>
+                <span className="text-xs text-gray-400">{cat.desc}</span>
+              </button>
+            ))}
+
+            <div className="p-4 rounded bg-brand-card border border-brand-border space-y-2 mt-4 text-xs text-gray-400">
+              <span className="font-bold text-gray-300 block uppercase">Routing Policy</span>
+              Our router computes margin thresholds in real-time. If expected margin drops below 55%, warnings trigger; if it drops below 40%, generation halts automatically.
+            </div>
+          </div>
+
+          {/* Results Console */}
+          <div className="lg:col-span-7 rounded-xl border border-brand-border bg-[#020306] p-6 font-mono text-sm flex flex-col justify-between space-y-6">
+            <div className="border-b border-brand-border/50 pb-3 flex justify-between items-center text-xs text-gray-500">
+              <span className="font-bold text-brand-cyan">ROUTING ENGINE CONSOLE</span>
+              <span>STATE: ACTIVE</span>
+            </div>
+
+            <div className="space-y-4 flex-1">
+              <div>
+                <span className="text-gray-500">// Evaluated Shot Details:</span>
+                <div className="text-white font-semibold mt-0.5">{routerData.shotType}</div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-3.5 rounded bg-brand-card border border-brand-border/60">
+                  <span className="text-xs text-gray-400 block">Selected Provider:</span>
+                  <span className="text-brand-cyan font-bold text-md">{routerData.selectedProvider}</span>
+                </div>
+                <div className="p-3.5 rounded bg-brand-card border border-brand-border/60">
+                  <span className="text-xs text-gray-400 block">Fidelity Score:</span>
+                  <span className="text-green-400 font-bold text-md">{routerData.qualityScore}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-3.5 rounded bg-brand-card border border-brand-border/60">
+                  <span className="text-xs text-gray-400 block">Unit Cost:</span>
+                  <span className="text-brand-violet font-bold text-md">{routerData.costSec} credits/sec</span>
+                </div>
+                <div className="p-3.5 rounded bg-brand-card border border-brand-border/60">
+                  <span className="text-xs text-gray-400 block">Expected Margin:</span>
+                  <span className="text-brand-amber font-bold text-md">{routerData.expectedMargin} Gross</span>
+                </div>
+              </div>
+
+              <div className="text-xs text-gray-400 leading-relaxed bg-brand-card border border-brand-border/40 p-3 rounded">
+                <span className="font-bold text-gray-300 uppercase block mb-1">Scoring Rationale:</span>
+                {routerData.reason}
+              </div>
+            </div>
+
+            <div className="border-t border-brand-border/30 pt-3 text-[11px] text-gray-500 flex justify-between">
+              <span>PRICING ENGINE v1.2</span>
+              <span>© EPISODICAI</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. PRICING SECTION */}
+      <section id="pricing" className="max-w-7xl mx-auto px-6 md:px-12 py-20 border-t border-brand-border/40">
+        <div className="text-center space-y-4 mb-16">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white">Transparent, Credit-Based Pricing</h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Top-up credits as needed. No lock-in, no hidden costs. Pay only for the resources your series actually consumes.
+          </p>
+        </div>
+
+        {/* Pricing Tiers */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          {[
+            {
+              name: "Indie Creator",
+              price: "$49",
+              duration: "month",
+              credits: "100 credits included",
+              features: ["1 active show concept", "Standard quality rendering", "Shared workspace", "Continuity checker access", "Email support"],
+              cta: "Start Creating",
+              gradient: "from-brand-border to-brand-border/40"
+            },
+            {
+              name: "Production House",
+              price: "$199",
+              duration: "month",
+              credits: "500 credits included",
+              features: ["3 active show concepts", "High-fidelity rendering options", "Multi-tenant workspaces (up to 5)", "Custom character voice profiles", "Priority rendering queues", "24/7 Slack Support"],
+              cta: "Go Pro Now",
+              gradient: "from-brand-violet/40 via-brand-violet/20 to-brand-card",
+              highlight: true
+            },
+            {
+              name: "Enterprise Studio",
+              price: "$999",
+              duration: "month",
+              credits: "3,000 credits included",
+              features: ["Unlimited active show concepts", "Ultra-high-fidelity rendering", "Unlimited workspace members", "Custom local provider integrations", "Dedicated rendering worker node", "Dedicated account manager"],
+              cta: "Scale Studio",
+              gradient: "from-brand-cyan/20 to-brand-card"
+            }
+          ].map((tier, index) => (
+            <div 
+              key={index}
+              className={`relative rounded-xl border p-8 flex flex-col justify-between space-y-6 ${
+                tier.highlight 
+                  ? 'border-brand-violet bg-gradient-to-b ' + tier.gradient + ' shadow-xl shadow-brand-violet/5 scale-105 z-10' 
+                  : 'border-brand-border bg-brand-card bg-gradient-to-b ' + tier.gradient
+              }`}
+            >
+              {tier.highlight && (
+                <div className="absolute top-0 right-6 -translate-y-1/2 bg-brand-violet text-white text-xs font-bold px-3 py-1 rounded-full uppercase">
+                  Most Popular
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <h4 className="text-xl font-bold text-white">{tier.name}</h4>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-extrabold text-white">{tier.price}</span>
+                  <span className="text-xs text-gray-400">/{tier.duration}</span>
+                </div>
+                <div className="text-sm font-semibold text-brand-cyan uppercase tracking-wider">{tier.credits}</div>
+              </div>
+
+              <ul className="space-y-2 text-sm text-gray-300 flex-1 py-4 border-t border-brand-border/40">
+                {tier.features.map((feat, fi) => (
+                  <li key={fi} className="flex items-start gap-2">
+                    <span className="text-brand-violet mt-0.5">✔</span>
+                    <span>{feat}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link 
+                href="/onboarding"
+                className={`w-full text-center py-3 rounded-lg font-bold text-sm transition ${
+                  tier.highlight 
+                    ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white hover:brightness-110 shadow-lg shadow-brand-violet/20' 
+                    : 'bg-brand-border/60 hover:bg-brand-border text-white'
+                }`}
+              >
+                {tier.cta}
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* Pricing Estimator Tool */}
+        <div className="rounded-xl border border-brand-border bg-brand-card p-6 md:p-8 space-y-6">
+          <div className="flex items-center gap-2 border-b border-brand-border/40 pb-4">
+            <Coins className="w-5 h-5 text-brand-cyan" />
+            <h3 className="text-lg font-bold text-white">Dynamic Cost Calculator</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* Controls */}
+            <div className="space-y-6">
+              {/* Episodes slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-300 font-semibold">Target Episodes / Month</span>
+                  <span className="text-brand-cyan font-bold">{calcEpisodes} episodes</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="12" 
+                  value={calcEpisodes}
+                  onChange={e => setCalcEpisodes(Number(e.target.value))}
+                  className="w-full accent-brand-violet bg-[#0b0c16] rounded-lg h-2"
+                />
+              </div>
+
+              {/* Quality level selection */}
+              <div className="space-y-2">
+                <span className="text-gray-300 font-semibold text-sm block">Quality Tier / rendering Density</span>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'standard', name: "Standard", desc: "40 credits/ep" },
+                    { id: 'high', name: "High-Fidelity", desc: "80 credits/ep" },
+                    { id: 'ultra', name: "Ultra-Motion", desc: "150 credits/ep" }
+                  ].map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => setCalcTier(t.id as any)}
+                      className={`p-3 rounded-lg border text-left flex flex-col gap-1 transition ${
+                        calcTier === t.id 
+                          ? 'border-brand-violet bg-brand-violet/10 text-white' 
+                          : 'border-brand-border bg-[#05060f] hover:bg-brand-border/40 text-gray-400'
+                      }`}
+                    >
+                      <span className="font-bold text-xs">{t.name}</span>
+                      <span className="text-[10px] text-gray-500 font-semibold">{t.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Price Output display */}
+            <div className="p-6 rounded-xl border border-brand-border bg-[#020306] text-center space-y-4">
+              <div className="text-xs text-gray-400 font-bold uppercase tracking-wider">Estimated Resource Requirement</div>
+              <div className="space-y-1">
+                <div className="text-3xl font-extrabold text-white">{calcResult.creditsUsed} Credits</div>
+                <div className="text-sm text-gray-500">Consumed dynamically as scenes generate</div>
+              </div>
+
+              <div className="text-2xl font-bold text-brand-cyan">
+                ${calcResult.priceUSD.toFixed(2)} <span className="text-xs text-gray-500 font-normal">/month</span>
+              </div>
+
+              <div className="text-xs text-gray-400 leading-relaxed max-w-sm mx-auto">
+                *Estimated billing based on 5 minutes per episode. Real cost adjusts depending on your timeline edits, shot retries, and provider choices.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="border-t border-brand-border/60 py-12 px-6 md:px-12 text-center text-sm text-gray-500 bg-brand-bg">
+      <footer className="border-t border-brand-border/60 py-12 px-6 md:px-12 text-center text-sm text-gray-500 bg-[#020306]">
         <div className="flex justify-center gap-6 mb-4">
           <a href="#" className="hover:text-gray-300">Privacy Policy</a>
           <a href="#" className="hover:text-gray-300">Terms of Use</a>
