@@ -1,0 +1,286 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Workspace {
+  id                String   @id @default(uuid())
+  name              String
+  studioName        String
+  teamSize          Int      @default(1)
+  timeZone          String   @default("UTC")
+  preferredLanguage String   @default("en")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model CreditAccount {
+  id          String   @id @default(uuid())
+  workspaceId String   @unique
+  balance     Float    @default(100.0) // initial free credits
+  reserved    Float    @default(0.0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CreditLedgerEntry {
+  id          String   @id @default(uuid())
+  accountId   String
+  type        String // purchase, grant, reservation, consumption, release, refund, adjustment
+  amount      Float
+  description String
+  referenceId String?
+  createdAt   DateTime @default(now())
+}
+
+model Show {
+  id                 String   @id @default(uuid())
+  workspaceId        String
+  title              String
+  tagline            String?
+  premise            String
+  fullConcept        String
+  genre              String
+  subgenres          String // Comma separated list
+  targetAudience     String
+  ageRating          String
+  durationMinutes    Int      @default(5)
+  seasonLength       Int      @default(3)
+  releaseCadence     String   @default("weekly")
+  visualFormat       String   @default("16:9")
+  aspectRatio        String   @default("16:9")
+  influences         String // Comma separated list
+  avoidTopics        String // Comma separated list
+  automationLevel    String   @default("Copilot") // Copilot, Supervised Autopilot, Full Autopilot
+  budgetPerEpisode   Float    @default(50.0)
+  monthlyBudget      Float    @default(200.0)
+  qualityTier        String   @default("STANDARD")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model SeriesBible {
+  id                      String   @id @default(uuid())
+  showId                  String   @unique
+  version                 Int      @default(1)
+  summary                 String
+  worldRules              String // JSON array as string
+  themes                  String // JSON array as string
+  forbiddenContradictions String // JSON array as string
+  seasonOpportunities     String // JSON array as string
+  visualIdentityNotes     String
+  voiceIdentityNotes      String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model Character {
+  id                 String   @id @default(uuid())
+  showId             String
+  name               String
+  aliases            String // Comma separated
+  role               String   @default("primary") // primary, supporting, antagonist, background
+  age                Int
+  biography          String
+  personalityTraits  String // Comma separated
+  height             String
+  build              String
+  hair               String
+  eyes               String
+  clothingStyle      String
+  mannerisms         String // Comma separated
+  voiceId            String?
+  referenceImageUrls String // Comma separated
+  lockedTraits       String // Comma separated
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Relationship {
+  id           String   @id @default(uuid())
+  showId       String
+  characterAId String
+  characterBId String
+  type         String
+  description  String
+  dynamicScore Float    @default(0.0)
+}
+
+model Location {
+  id                 String  @id @default(uuid())
+  showId             String
+  name               String
+  description        String
+  geography          String
+  architecture       String
+  referenceImageUrls String // Comma separated
+  floorPlanUrl       String?
+  storySignificance  String
+}
+
+model StoryObject {
+  id                 String  @id @default(uuid())
+  showId             String
+  name               String
+  description        String
+  ownerId            String?
+  currentLocationId  String?
+  condition          String  @default("pristine")
+  referenceImageUrls String // Comma separated
+}
+
+model CanonFact {
+  id                 String   @id @default(uuid())
+  showId             String
+  subject            String
+  predicate          String
+  object             String
+  status             String   @default("approved") // draft, proposed, approved, retconned, archived
+  effectiveStoryDate String
+  endDate            String?
+  isPrivate          Boolean  @default(false)
+  knownByCharacters  String // Comma separated IDs
+  sourceEpisodeId    String?
+  sourceSceneId      String?
+  confidence         Float    @default(1.0)
+  version            Int      @default(1)
+  createdBy          String
+  approvedBy         String?
+  retconId           String?
+}
+
+model CanonEvent {
+  id                 String   @id @default(uuid())
+  showId             String
+  episodeId          String
+  type               String
+  description        String
+  timestamp          DateTime @default(now())
+  impactedFacts      String // Comma separated IDs
+}
+
+model Season {
+  id             String   @id @default(uuid())
+  showId         String
+  number         Int
+  status         String   @default("Concept")
+  seasonQuestion String
+  centralConflict String
+  summary        String
+  createdAt      DateTime @default(now())
+}
+
+model Episode {
+  id                 String   @id @default(uuid())
+  seasonId           String
+  number             Int
+  title              String
+  status             String   @default("Idea")
+  objectives         String // JSON array as string
+  summary            String
+  budgetCredits      Float    @default(50.0)
+  actualCostCredits  Float    @default(0.0)
+  publishedUrl       String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Script {
+  id        String   @id @default(uuid())
+  episodeId String   @unique
+  version   Int      @default(1)
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Scene {
+  id           String @id @default(uuid())
+  scriptId     String
+  sceneNumber  Int
+  locationId   String
+  timeOfDay    String // day, night, dusk, dawn
+  description  String
+  beats        String // JSON array as string
+}
+
+model Shot {
+  id                    String   @id @default(uuid())
+  sceneId               String
+  shotNumber            Int
+  durationSeconds       Float
+  shotType              String
+  cameraAngle           String
+  cameraMovement        String
+  compositionDescription String
+  subjectDescription     String
+  actionDescription     String
+  dialogueCharacterId   String?
+  dialogueText          String?
+  dialogueVoiceId       String?
+  dialogueEmotion       String?
+  promptText            String
+  productionMethod      String
+  providerName          String
+  modelName             String
+  estimatedCostCredits  Float
+  actualCostCredits     Float?
+  status                String   @default("pending") // pending, generating, completed, failed
+  mediaUrl              String?
+}
+
+model GenerationJob {
+  id           String   @id @default(uuid())
+  workspaceId  String
+  episodeId    String
+  type         String // bible, script, storyboard, assets, rendering, publish
+  status       String   @default("queued") // queued, running, completed, failed, paused
+  progress     Float    @default(0.0)
+  errorMessage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PublicationJob {
+  id             String    @id @default(uuid())
+  episodeId      String
+  platform       String
+  status         String    @default("pending") // pending, running, success, failed
+  publishedUrl   String?
+  platformPostId String?
+  errorDetails   String?
+  scheduledTime  DateTime?
+  publishedTime  DateTime?
+}
+
+model ProviderPricing {
+  id                    String   @id @default(uuid())
+  providerName          String
+  modelName             String
+  capability            String
+  costUnit              String
+  costPerUnit           Float
+  resolutionMultiplier  Float    @default(1.0)
+  effectiveDate         DateTime @default(now())
+  expirationDate        DateTime?
+}
+
+model QualityReport {
+  id           String   @id @default(uuid())
+  targetId     String
+  targetType   String
+  overallScore Float
+  findings     String // JSON array as string
+  createdAt    DateTime @default(now())
+}

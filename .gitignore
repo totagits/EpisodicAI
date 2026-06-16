@@ -1,0 +1,28 @@
+# Node / Next.js
+node_modules/
+.next/
+dist/
+out/
+build/
+.npm
+.eslintcache
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Databases & local state
+apps/api/prisma/dev.db
+apps/api/prisma/dev.db-journal
+*.log
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db

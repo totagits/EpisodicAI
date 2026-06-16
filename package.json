@@ -1,0 +1,20 @@
+{
+  "name": "episodic-ai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EpisodicAI: Autonomous AI Series Studio and Show Operating System",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=apps/api\" \"npm run dev:python\"",
+    "dev:python": "cd services/ai-orchestrator && python -m uvicorn main:app --reload --port 8000",
+    "install:all": "npm install && cd services/ai-orchestrator && pip install -r requirements.txt",
+    "test": "npm test --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  }
+}
