@@ -22,4 +22,4 @@ COPY --from=builder /app/apps/api/ ./apps/api/
 
 WORKDIR /app/apps/api
 EXPOSE 4000
-CMD ["npm", "run", "dev"]
+CMD ["node", "dist/main.js"]
