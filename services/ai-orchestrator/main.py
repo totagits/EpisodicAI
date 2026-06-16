@@ -173,34 +173,62 @@ async def season_architect(request: SeasonRequest):
     """
     time.sleep(0.5)
     
+    # Try to parse the title and premise from bible_summary
+    import re
+    title = "Gravity's Belief"
+    premise = "A young mechanic discovers boots that control vertical gravity vectors."
+    
+    title_match = re.search(r"universe of '([^']+)'", request.bible_summary)
+    if title_match:
+        title = title_match.group(1)
+        
+    premise_match = re.search(r"exists where (.+)", request.bible_summary)
+    if premise_match:
+        premise = premise_match.group(1)
+        premise = premise.replace(". The series explores themes of choice and identity.", "")
+
+    genre = request.genre or "Sci-Fi"
+    
     episodes = [
         EpisodeOutline(
             number=1,
-            title="The Ground Zero",
-            objectives=["Introduce the protagonist Luna", "Showcase the activation of the boot prototype", "Set up the Sky Guard threat"],
-            summary="Luna activates her illegal gravity boots in the workshop, sparking a warning signal to the local authorities.",
-            climax="Luna walks on the ceiling to escape a patrol sweep just in time."
+            title=f"The Rise of {title.split(':')[0].strip()}",
+            objectives=[
+                f"Establish the stakes of: {premise[:50]}...",
+                "Introduce the primary protagonist",
+                "Set up the central conflict"
+            ],
+            summary=f"The story begins in the universe of {title}. The protagonist must confront the harsh reality of '{premise}', leading to a critical discovery.",
+            climax="The protagonist makes a desperate move to protect their secret, narrowly escaping detection."
         ),
         EpisodeOutline(
             number=2,
-            title="Horizontal Horizon",
-            objectives=["Develop the alliance between Luna and Leo", "Infiltrate the power generator site", "Recover a raw energy battery"],
-            summary="Luna and Leo navigate the lower structural grids of the city to steal an energy core needed to power the boots long-term.",
-            climax="Leo is captured by the Sky Guard while Luna escapes with the battery."
+            title="Tensions and Infiltration",
+            objectives=[
+                "Infiltrate the antagonist sector",
+                "Acquire key tactical assets",
+                "Deepen the core partner relationship"
+            ],
+            summary=f"Factions collide as characters plan an infiltration to bypass the restrictions of '{premise}'. Together, they secure a critical resource.",
+            climax="An escape sequence goes wrong, leaving one of the allies captured by the authorities."
         ),
         EpisodeOutline(
             number=3,
-            title="The Fall Upward",
-            objectives=["Rescue Leo from the Sky Guard Citadel", "Execute a high-altitude jump", "Resolve the season cliffhanger"],
-            summary="Luna uses the fully powered gravity boots to ascend to the Sky Guard Citadel, rescue Leo, and make an escape into the clouds.",
-            climax="They fall upwards into the upper cloud layer, discovering an entire floating city they didn't know existed."
+            title="The Resolution and Beyond",
+            objectives=[
+                "Execute the high-altitude rescue",
+                "Challenge the central powers",
+                "Resolve the season cliffhanger"
+            ],
+            summary=f"Using their newly acquired assets and strategies, the characters stage a daring raid to liberate their captured ally and change the balance of power.",
+            climax="They break through the barrier and escape, only to discover a vast new realm of possibilities that changes everything."
         )
     ]
 
     return SeasonPlanResponse(
-        season_question="Can a mechanic break the bonds of gravity to free her partner?",
-        central_conflict="Luna's belief-driven technology vs the Sky Guard's monopoly on vertical movement",
-        summary="A high-altitude sci-fi adventure detailing one girl's rise against gravitational class systems.",
+        season_question=f"Can they overcome the restrictions of {premise[:60]}?",
+        central_conflict=f"Protagonist goals vs Antagonist monopoly on {genre} resources",
+        summary=f"A dynamic {genre} series detailing the struggle over: {premise}",
         episodes=episodes
     )
 
@@ -212,29 +240,42 @@ async def screenplay_writer(request: ScreenplayRequest):
     """
     time.sleep(0.5)
     
-    # Mocking standard screenwriting formatting
+    primary_name = "Luna"
+    supporting_name = "Leo"
+    
+    if request.characters and len(request.characters) > 0:
+        primary_name = request.characters[0].get("name", "Luna")
+        primary_name = primary_name.replace("Protagonist ", "").replace("Supporting ", "")
+        
+    if request.characters and len(request.characters) > 1:
+        supporting_name = request.characters[1].get("name", "Leo")
+        supporting_name = supporting_name.replace("Protagonist ", "").replace("Supporting ", "")
+        
+    primary_upper = primary_name.upper()
+    supporting_upper = supporting_name.upper()
+    
     content = f"""
-    SCENE 1 - INT. LUNA'S WORKSHOP - DAY
+    SCENE 1 - INT. WORKSPACE AREA - DAY
     
-    LUNA (17, messy hair) is working on a pair of metallic leather boots. Sparks fly from the wires.
+    {primary_upper} is inspecting a critical piece of technology. Tension fills the room.
     
-    LUNA
-    (muttering)
-    Just one more solder...
+    {primary_upper}
+    (muttering, focused)
+    Almost there. Just need to align these core channels.
     
-    LEO (18, cautious) watches from the doorway, arms crossed.
+    {supporting_upper} watches from the entryway with arms crossed, looking anxious.
     
-    LEO
-    Luna, they'll detect that power surge.
+    {supporting_upper}
+    We don't have much time, {primary_name}. They're patrolling the perimeter.
     """
-
+    
     scenes = [
         SceneSchema(
             scene_number=1,
             location_id="loc-workshop",
             time_of_day="day",
-            description="Luna's cluttered workshop in the lower slums.",
-            beats=["Luna adjusts the boot", "Leo enters with warning"],
+            description=f"Workspace interior where {primary_name} is operating.",
+            beats=[f"{primary_name} adjusts the core tech", f"{supporting_name} warns of threat"],
             shots=[
                 ShotSchema(
                     shot_number=1,
@@ -242,15 +283,15 @@ async def screenplay_writer(request: ScreenplayRequest):
                     shot_type="Medium Shot",
                     camera_angle="Eye Level",
                     camera_movement="Static",
-                    composition="Luna at her cluttered workbench, soldering.",
-                    subject="Luna, wearing goggles and focusing intently.",
-                    action="Luna solders a copper wire onto a heavy leather boot.",
+                    composition=f"{primary_name} at the workbench focusing on the tech.",
+                    subject=primary_name,
+                    action=f"{primary_name} connects a wires assembly into the main device.",
                     dialogue=DialogueLineSchema(
-                        character_id="char-luna",
-                        text="Just one more solder and it's active.",
+                        character_id=f"char-{primary_name.lower()}",
+                        text="Almost there. Just need to align these core channels.",
                         emotion="focused"
                     ),
-                    prompt_text="Medium shot of teenage girl mechanic soldering a glowing steampunk boot in a dusty workshop, volumetric lighting, cinematic.",
+                    prompt_text=f"Medium shot of {primary_name} working with tools on a detailed technological device in a dusty workshop, cinematic lighting.",
                     production_method="talking-character"
                 ),
                 ShotSchema(
@@ -259,11 +300,16 @@ async def screenplay_writer(request: ScreenplayRequest):
                     shot_type="Close Up",
                     camera_angle="Low Angle",
                     camera_movement="Zoom",
-                    composition="Close up of the boot sole emitting a soft blue vapor.",
-                    subject="Retro-futuristic boot with copper coils.",
-                    action="The boot begins to hum and rises slightly off the surface.",
-                    prompt_text="Close up on a steampunk boot on a workbench as it sparks blue light and hovers slightly, smoke, depth of field.",
-                    production_method="image-to-video"
+                    composition=f"Close up on {supporting_name} speaking.",
+                    subject=supporting_name,
+                    action=f"{supporting_name} shifts weight, looking out the doorway.",
+                    dialogue=DialogueLineSchema(
+                        character_id=f"char-{supporting_name.lower()}",
+                        text=f"We don't have much time, {primary_name}. They're patrolling the perimeter.",
+                        emotion="anxious"
+                    ),
+                    prompt_text=f"Close up of {supporting_name} looking anxious, warning the camera, warm cinematic lighting, depth of field.",
+                    production_method="talking-character"
                 )
             ]
         )

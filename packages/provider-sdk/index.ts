@@ -262,7 +262,8 @@ export class ProviderRegistry {
       { id: 'p3', providerName: 'ElevenLabs', modelName: 'TTS-Multilingual-v2', capability: 'text-to-speech', costUnit: 'character', costPerUnit: 0.05, resolutionMultiplier: 1.0, effectiveDate: new Date() },
       { id: 'p4', providerName: 'OpenAI', modelName: 'gpt-4o', capability: 'llm', costUnit: 'token', costPerUnit: 0.01, resolutionMultiplier: 1.0, effectiveDate: new Date() },
       { id: 'p5', providerName: 'MockAI', modelName: 'MockImageGen-v2', capability: 'image-generation', costUnit: 'image', costPerUnit: 0.2, resolutionMultiplier: 1.0, effectiveDate: new Date() },
-      { id: 'p6', providerName: 'MockAI', modelName: 'MockVideoGen-v2', capability: 'video-generation', costUnit: 'second', costPerUnit: 1.0, resolutionMultiplier: 1.0, effectiveDate: new Date() }
+      { id: 'p6', providerName: 'MockAI', modelName: 'MockVideoGen-v2', capability: 'video-generation', costUnit: 'second', costPerUnit: 1.0, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p7', providerName: 'MockAI', modelName: 'MockLipSync-v2', capability: 'lip-sync', costUnit: 'second', costPerUnit: 0.8, resolutionMultiplier: 1.0, effectiveDate: new Date() }
     ];
   }
 

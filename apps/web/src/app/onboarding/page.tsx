@@ -78,6 +78,7 @@ export default function OnboardingWizard() {
           workspaceId: 'wsp-default',
           title,
           premise,
+          characterName,
           fullConcept: `${premise}. Tone is ${tone}. Magic/science rules: ${magicRules}`,
           genre,
           subgenres: [genre],

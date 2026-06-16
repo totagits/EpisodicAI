@@ -53,7 +53,8 @@ const seedPricing = [
   { id: 'p3', providerName: 'ElevenLabs', modelName: 'TTS-Multilingual-v2', capability: 'text-to-speech', costUnit: 'character', costPerUnit: 0.05 },
   { id: 'p4', providerName: 'OpenAI', modelName: 'gpt-4o', capability: 'llm', costUnit: 'token', costPerUnit: 0.01 },
   { id: 'p5', providerName: 'MockAI', modelName: 'MockImageGen-v2', capability: 'image-generation', costUnit: 'image', costPerUnit: 0.2 },
-  { id: 'p6', providerName: 'MockAI', modelName: 'MockVideoGen-v2', capability: 'video-generation', costUnit: 'second', costPerUnit: 1.0 }
+  { id: 'p6', providerName: 'MockAI', modelName: 'MockVideoGen-v2', capability: 'video-generation', costUnit: 'second', costPerUnit: 1.0 },
+  { id: 'p7', providerName: 'MockAI', modelName: 'MockLipSync-v2', capability: 'lip-sync', costUnit: 'second', costPerUnit: 0.8 }
 ];
 
 const mockProvider = new MockProvider();
@@ -126,35 +127,55 @@ app.post('/api/shows', async (req, res) => {
   };
   database.bibles[showId] = bible;
 
+  const characterName = showData.characterName || 'Luna';
+  const supportingName = characterName.toLowerCase() === 'leo' ? 'Alex' : 'Leo';
+
   // Add default characters
   const charId = `char-${uuidv4().substring(0, 8)}`;
   const defaultChar = {
     id: charId,
     showId,
-    name: 'Protagonist Luna',
-    aliases: ['Luna'],
+    name: `Protagonist ${characterName}`,
+    aliases: [characterName],
     role: 'primary',
     age: 17,
-    biography: 'A resourceful mechanic from the lower slums who dreams of flying.',
+    biography: `A resourceful and determined individual who drives the core narrative.`,
     personalityTraits: ['Curious', 'Stubborn', 'Optimistic'],
-    appearance: { height: "5'4\"", build: 'slender', hair: 'dark brown', eyes: 'hazel', clothingStyle: 'tattered jumpsuit' },
-    voiceId: 'voice-luna',
+    appearance: { height: "5'6\"", build: 'slender', hair: 'dark brown', eyes: 'hazel', clothingStyle: 'practical attire' },
+    voiceId: `voice-${characterName.toLowerCase()}`,
     referenceImageUrls: ['https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'],
-    lockedTraits: ['mechanical goggles', 'optimism']
+    lockedTraits: ['determination', 'focus']
   };
   database.characters.push(defaultChar);
+
+  const supportingCharId = `char-${uuidv4().substring(0, 8)}`;
+  const supportingChar = {
+    id: supportingCharId,
+    showId,
+    name: `Supporting ${supportingName}`,
+    aliases: [supportingName],
+    role: 'supporting',
+    age: 18,
+    biography: `A reliable partner and confidant who assists the protagonist.`,
+    personalityTraits: ['Cautious', 'Loyal', 'Pragmatic'],
+    appearance: { height: "5'10\"", build: 'average', hair: 'sandy brown', eyes: 'blue', clothingStyle: 'sturdy clothes' },
+    voiceId: `voice-${supportingName.toLowerCase()}`,
+    referenceImageUrls: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop'],
+    lockedTraits: ['loyalty', 'caution']
+  };
+  database.characters.push(supportingChar);
 
   // Add default Location
   const locId = `loc-workshop`;
   database.locations.push({
     id: locId,
     showId,
-    name: 'Luna\'s Workshop',
-    description: 'A cluttered workspace filled with copper coils, hovering gears, and neon tools.',
-    geography: 'Lower Slum District',
-    architecture: 'Retro-steampunk industrial',
+    name: `${characterName}'s Workshop`,
+    description: `A cluttered workspace filled with equipment, components, and tools matching the series theme.`,
+    geography: 'Lower District',
+    architecture: 'Industrial functional',
     referenceImageUrls: ['https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=600&auto=format&fit=crop'],
-    storySignificance: 'The birthplace of the directional gravity boots.'
+    storySignificance: `The birthplace of the main project/discovery.`
   });
 
   // Seed initial approved canon facts
@@ -163,17 +184,17 @@ app.post('/api/shows', async (req, res) => {
     showId,
     subject: defaultChar.id,
     predicate: 'livesIn',
-    object: 'Lower Slum District',
+    object: 'Lower District',
     status: 'approved',
     effectiveStoryDate: 'Season 1, Episode 1, Day 1',
     isPrivate: false,
-    knownByCharacters: [defaultChar.id],
+    knownByCharacters: [defaultChar.id, supportingChar.id],
     confidence: 1.0,
     version: 1,
     createdBy: 'usr-default'
   });
 
-  res.json({ show: newShow, bible, characters: [defaultChar] });
+  res.json({ show: newShow, bible, characters: [defaultChar, supportingChar] });
 });
 
 app.get('/api/shows/:id', (req, res) => {
@@ -210,13 +231,18 @@ app.post('/api/seasons', async (req, res) => {
     seasonData = await aiResponse.json();
   } catch (error) {
     // Fallback simulation
+    const chars = database.characters.filter(c => c.showId === showId);
+    const primaryName = chars[0]?.aliases?.[0] || 'Luna';
+    const supportingName = chars[1]?.aliases?.[0] || 'Leo';
+    
     seasonData = {
-      season_question: "Will Luna escape the Sky Guard?",
-      central_conflict: "Luna vs Sky Guard Authorities",
-      summary: "A high-altitude struggle over vertical mobility.",
+      season_question: `Will ${primaryName} successfully resolve the challenges of ${show?.title || 'the series'}?`,
+      central_conflict: `${primaryName} vs the central thematic conflicts of ${show?.genre || 'the story'}`,
+      summary: show?.premise || "A compelling narrative detailing the characters' main struggle.",
       episodes: [
-        { number: 1, title: "The Ground Zero", objectives: ["Test the boots"], summary: "Luna activates her boots.", climax: "Walking on ceiling." },
-        { number: 2, title: "Citadel Infiltration", objectives: ["Rescue Leo"], summary: "Luna sneaks into the citadel.", climax: "Hacking doors." }
+        { number: 1, title: `Genesis of ${primaryName}'s Journey`, objectives: ["Establish the stakes", "Introduce key characters"], summary: `${primaryName} discovers a crucial path related to their premise, facing initial opposition.`, climax: "A tense confrontation." },
+        { number: 2, title: "Tensions & Infiltration", objectives: [`Team up with ${supportingName}`, "Acquire tactical assets"], summary: `${primaryName} and ${supportingName} plan a daring move to bypass security and secure their objective.`, climax: `A narrow escape leaving ${supportingName} in a precarious situation.` },
+        { number: 3, title: "The Daring Resolution", objectives: [`Rescue ${supportingName}`, "Overcome the central barrier"], summary: `Using their skills and plans, ${primaryName} launches a rescue mission to liberate ${supportingName}.`, climax: "A dramatic escape that opens up a new realm of possibilities." }
       ]
     };
   }
@@ -292,16 +318,21 @@ app.post('/api/episodes/:id/script', async (req, res) => {
     scriptData = await response.json();
   } catch (e) {
     // Offline / Fallback
+    const primaryName = chars[0]?.aliases?.[0] || 'Luna';
+    const supportingName = chars[1]?.aliases?.[0] || 'Leo';
+    const primaryUpper = primaryName.toUpperCase();
+    const supportingUpper = supportingName.toUpperCase();
+
     scriptData = {
       title: episode?.title || 'Episode',
-      content: 'LUNA works at her bench. LEO enters and warns of the Sky Guard.',
+      content: `${primaryUpper} is working at the workbench. ${supportingUpper} enters looking anxious.\n\n${primaryUpper}\n(focused)\nAlmost there. Just need to align these core channels.\n\n${supportingUpper}\nWe don't have much time, ${primaryName}. They're patrolling the perimeter.`,
       scenes: [
         {
           scene_number: 1,
           location_id: 'loc-workshop',
           time_of_day: 'day',
-          description: 'Int. Slum Workshop',
-          beats: ['Boot activates'],
+          description: `Int. ${primaryName}'s Workshop`,
+          beats: [`${primaryName} adjusts the core tech`, `${supportingName} warns of threat`],
           shots: [
             {
               shot_number: 1,
@@ -309,11 +340,24 @@ app.post('/api/episodes/:id/script', async (req, res) => {
               shot_type: 'Medium Shot',
               camera_angle: 'Eye Level',
               camera_movement: 'Static',
-              composition: 'Luna at work',
-              subject: 'Luna',
-              action: 'Solders boot',
-              dialogue: { character_id: chars[0]?.id || 'char-luna', text: 'It works!', voice_id: 'voice-luna', emotion: 'excited' },
-              prompt_text: 'Girl soldering boot, cinematic',
+              composition: `${primaryName} at the workbench focusing on the tech.`,
+              subject: primaryName,
+              action: `${primaryName} connects a wires assembly into the main device.`,
+              dialogue: { character_id: chars[0]?.id || 'char-luna', text: 'Almost there. Just need to align these core channels.', voice_id: `voice-${primaryName.toLowerCase()}`, emotion: 'focused' },
+              prompt_text: `Medium shot of ${primaryName} working with tools on a detailed technological device, cinematic lighting`,
+              production_method: 'talking-character'
+            },
+            {
+              shot_number: 2,
+              duration_seconds: 3,
+              shot_type: 'Close Up',
+              camera_angle: 'Low Angle',
+              camera_movement: 'Zoom',
+              composition: `Close up on ${supportingName} speaking.`,
+              subject: supportingName,
+              action: `${supportingName} shifts weight, looking out the doorway.`,
+              dialogue: { character_id: chars[1]?.id || 'char-leo', text: `We don't have much time, ${primaryName}. They're patrolling the perimeter.`, voice_id: `voice-${supportingName.toLowerCase()}`, emotion: 'anxious' },
+              prompt_text: `Close up of ${supportingName} looking anxious, warning the camera, warm cinematic lighting, depth of field`,
               production_method: 'talking-character'
             }
           ]
