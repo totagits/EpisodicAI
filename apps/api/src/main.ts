@@ -12,6 +12,10 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
 
+const getOrchestratorUrl = () => {
+  return process.env.AI_ORCHESTRATOR_URL || 'http://localhost:8000';
+};
+
 // --- In-Memory DB Store for Fast, Zero-Dependency Demo Out-Of-The-Box ---
 // Bypasses local PostgreSQL/Docker setup, falling back cleanly to full state simulation
 const database = {
@@ -85,7 +89,7 @@ app.post('/api/shows', async (req, res) => {
   // Call AI Genesis agent via Fetch or simulate local Mock
   let bibleData;
   try {
-    const aiResponse = await fetch('http://localhost:8000/agents/genesis', {
+    const aiResponse = await fetch(`${getOrchestratorUrl()}/agents/genesis`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -193,7 +197,7 @@ app.post('/api/seasons', async (req, res) => {
 
   let seasonData;
   try {
-    const aiResponse = await fetch('http://localhost:8000/agents/season', {
+    const aiResponse = await fetch(`${getOrchestratorUrl()}/agents/season`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -269,7 +273,7 @@ app.post('/api/episodes/:id/script', async (req, res) => {
 
   let scriptData;
   try {
-    const response = await fetch('http://localhost:8000/agents/screenplay', {
+    const response = await fetch(`${getOrchestratorUrl()}/agents/screenplay`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

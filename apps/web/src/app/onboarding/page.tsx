@@ -18,6 +18,21 @@ import {
   Play
 } from 'lucide-react';
 
+const getApiUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname.includes('run.app')) {
+      if (window.location.hostname.includes('episodic-ai-web')) {
+        return window.location.origin.replace('episodic-ai-web', 'episodic-ai-api');
+      }
+      return 'https://episodic-ai-api-26273727080.us-central1.run.app';
+    }
+  }
+  return 'http://localhost:4000';
+};
+
 export default function OnboardingWizard() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -55,7 +70,7 @@ export default function OnboardingWizard() {
   const handleGenerateBible = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:4000/api/shows', {
+      const response = await fetch(`${getApiUrl()}/api/shows`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,7 +132,7 @@ export default function OnboardingWizard() {
     if (generatedBible) {
       try {
         const showId = generatedBible.showId;
-        const response = await fetch('http://localhost:4000/api/seasons', {
+        const response = await fetch(`${getApiUrl()}/api/seasons`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ showId, seasonNumber: 1 })

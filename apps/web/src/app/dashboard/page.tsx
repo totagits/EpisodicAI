@@ -35,6 +35,21 @@ const seedPricing = [
   { id: 'p6', providerName: 'MockAI', modelName: 'MockVideoGen-v2', capability: 'video-generation', costUnit: 'second', costPerUnit: 1.0 }
 ];
 
+const getApiUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname.includes('run.app')) {
+      if (window.location.hostname.includes('episodic-ai-web')) {
+        return window.location.origin.replace('episodic-ai-web', 'episodic-ai-api');
+      }
+      return 'https://episodic-ai-api-26273727080.us-central1.run.app';
+    }
+  }
+  return 'http://localhost:4000';
+};
+
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,7 +84,7 @@ function DashboardContent() {
 
   const fetchShowData = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/shows/${showId}`);
+      const response = await fetch(`${getApiUrl()}/api/shows/${showId}`);
       if (response.ok) {
         const data = await response.json();
         setShow(data.show);
@@ -107,7 +122,7 @@ function DashboardContent() {
 
   const fetchBillingData = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/billing/ledger');
+      const response = await fetch(`${getApiUrl()}/api/billing/ledger`);
       if (response.ok) {
         const data = await response.json();
         setCreditBalance(data.account.balance);
@@ -126,7 +141,7 @@ function DashboardContent() {
   const handleGenerateScript = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/episodes/eps-default/script`, {
+      const response = await fetch(`${getApiUrl()}/api/episodes/eps-default/script`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -190,7 +205,7 @@ function DashboardContent() {
 
   const fetchProductionTimeline = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/episodes/eps-default/production`);
+      const response = await fetch(`${getApiUrl()}/api/episodes/eps-default/production`);
       if (response.ok) {
         const data = await response.json();
         setShots(data.shots || []);
@@ -210,7 +225,7 @@ function DashboardContent() {
   const handleTriggerRender = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/episodes/eps-default/render`, {
+      const response = await fetch(`${getApiUrl()}/api/episodes/eps-default/render`, {
         method: 'POST'
       });
       const data = await response.json();
@@ -251,7 +266,7 @@ function DashboardContent() {
   const pollJobStatus = (jobId: string) => {
     const timer = setInterval(async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/jobs/${jobId}`);
+        const response = await fetch(`${getApiUrl()}/api/jobs/${jobId}`);
         const data = await response.json();
         setJobStatus(data);
         if (data.status === 'completed' || data.status === 'failed') {
@@ -267,7 +282,7 @@ function DashboardContent() {
 
   const handlePublish = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/episodes/eps-default/publish`, { method: 'POST' });
+      const response = await fetch(`${getApiUrl()}/api/episodes/eps-default/publish`, { method: 'POST' });
       const data = await response.json();
       alert(`Episode Published Successfully! Target URL: ${data.url}`);
     } catch (e) {
@@ -277,7 +292,7 @@ function DashboardContent() {
 
   const handleDepositCredits = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/billing/deposit', {
+      const response = await fetch(`${getApiUrl()}/api/billing/deposit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: depositAmount })
