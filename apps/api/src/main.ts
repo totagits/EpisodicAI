@@ -398,13 +398,14 @@ app.post('/api/episodes/:id/script', async (req, res) => {
 
 app.get('/api/episodes/:id/production', (req, res) => {
   const epId = req.params.id;
+  const episode = database.episodes.find(e => e.id === epId);
   const script = database.scripts[epId];
   const scs = database.scenes.filter(sc => sc.scriptId === script?.id);
   const sceneIds = scs.map(sc => sc.id);
   const shts = database.shots.filter(sh => sceneIds.includes(sh.sceneId));
   const report = database.qualityReports.find(r => r.targetId === script?.id);
 
-  res.json({ script, scenes: scs, shots: shts, qualityReport: report });
+  res.json({ episode, script, scenes: scs, shots: shts, qualityReport: report });
 });
 
 // Render/Run jobs
@@ -553,22 +554,78 @@ app.put('/api/shots/:id', (req, res) => {
   res.json(shot);
 });
 
+const socialAccounts = [] as any[];
+
+app.get('/api/social-accounts', (req, res) => {
+  res.json(socialAccounts);
+});
+
+app.post('/api/social-accounts', (req, res) => {
+  const { platform, handle, monetizationEnabled } = req.body;
+  const newAccount = {
+    id: `acc-${uuidv4().substring(0, 8)}`,
+    platform,
+    handle,
+    monetizationEnabled: monetizationEnabled === true,
+    connectedAt: new Date()
+  };
+  socialAccounts.push(newAccount);
+  res.json(newAccount);
+});
+
+app.delete('/api/social-accounts/:id', (req, res) => {
+  const idx = socialAccounts.findIndex(a => a.id === req.params.id);
+  if (idx !== -1) {
+    socialAccounts.splice(idx, 1);
+  }
+  res.json({ success: true });
+});
+
 app.post('/api/episodes/:id/publish', (req, res) => {
   const epId = req.params.id;
   const episode = database.episodes.find(e => e.id === epId);
-  episode!.status = 'Published';
-  episode!.publishedUrl = 'https://youtube.com/watch?v=mock-episodic-ai';
+  if (!episode) return res.status(404).json({ error: 'Episode not found' });
+
+  const { platforms, title, description, monetizationOptions } = req.body;
   
-  database.publications.push({
-    id: `pub-${uuidv4().substring(0, 8)}`,
-    episodeId: epId,
-    platform: 'youtube',
-    status: 'success',
-    publishedUrl: episode!.publishedUrl,
-    publishedTime: new Date()
+  episode.status = 'Published';
+  
+  const createdPublications = [] as any[];
+
+  const platformUrls: Record<string, string> = {
+    youtube: `https://youtube.com/watch?v=ep-${epId}`,
+    tiktok: `https://tiktok.com/@creator/video/ep-${epId}`,
+    instagram: `https://instagram.com/p/ep-${epId}`
+  };
+
+  const selectedPlatforms = platforms && platforms.length > 0 ? platforms : ['youtube'];
+
+  selectedPlatforms.forEach((platform: string) => {
+    const pubUrl = platformUrls[platform] || `https://${platform}.com/video/ep-${epId}`;
+    
+    const pubRecord = {
+      id: `pub-${uuidv4().substring(0, 8)}`,
+      episodeId: epId,
+      platform,
+      status: 'success',
+      publishedUrl: pubUrl,
+      publishedTime: new Date(),
+      title: title || episode.title,
+      description: description || episode.summary,
+      monetizationEnabled: monetizationOptions?.adsEnabled === true
+    };
+    
+    database.publications.push(pubRecord);
+    createdPublications.push(pubRecord);
   });
 
-  res.json({ success: true, url: episode!.publishedUrl });
+  episode.publishedUrl = createdPublications[0]?.publishedUrl || platformUrls.youtube;
+
+  res.json({ 
+    success: true, 
+    url: episode.publishedUrl, 
+    publications: createdPublications 
+  });
 });
 
 app.listen(PORT, () => {
