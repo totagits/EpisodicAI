@@ -436,7 +436,9 @@ app.post('/api/episodes/:id/script', async (req, res) => {
 
   database.qualityReports.push(report);
 
-  episode!.status = 'Script Draft';
+  if (episode) {
+    episode.status = 'Script Draft';
+  }
   res.json({ script, scenes: database.scenes.filter(sc => sc.scriptId === scriptId), report });
 });
 
@@ -461,7 +463,9 @@ app.post('/api/episodes/:id/render', async (req, res) => {
   const sceneIds = scs.map(sc => sc.id);
   const shts = database.shots.filter(sh => sceneIds.includes(sh.sceneId));
 
-  episode!.status = 'Generating';
+  if (episode) {
+    episode.status = 'Generating';
+  }
 
   // Reserve credits using pricing router
   let totalReserved = 0;
@@ -485,7 +489,9 @@ app.post('/api/episodes/:id/render', async (req, res) => {
 
   const account = database.credits['wsp-default'];
   if (account.balance < totalReserved) {
-    episode!.status = 'Failed';
+    if (episode) {
+      episode.status = 'Failed';
+    }
     return res.status(400).json({ error: 'Insufficient credits account balance', required: totalReserved, available: account.balance });
   }
 
@@ -551,8 +557,10 @@ app.post('/api/episodes/:id/render', async (req, res) => {
       referenceId: epId
     });
 
-    episode!.actualCostCredits = actualCostSum;
-    episode!.status = 'Final Approval';
+    if (episode) {
+      episode.actualCostCredits = actualCostSum;
+      episode.status = 'Final Approval';
+    }
     activeJob.status = 'completed';
     activeJob.progress = 100.0;
   }, 3000);

@@ -103,12 +103,52 @@ function DashboardContent() {
     publications?: any[];
   }>({ status: 'idle', step: '', progress: 0 });
 
+  const resolveActiveEpisode = async () => {
+    if (showId && episodeId === 'eps-default') {
+      try {
+        const seasonsRes = await fetch(`${getApiUrl()}/api/seasons/${showId}`);
+        if (seasonsRes.ok) {
+          const seasons = await seasonsRes.json();
+          if (seasons.length > 0) {
+            const firstSeason = seasons[0];
+            const epsRes = await fetch(`${getApiUrl()}/api/episodes/${firstSeason.id}`);
+            if (epsRes.ok) {
+              const eps = await epsRes.json();
+              if (eps.length > 0) {
+                router.replace(`/dashboard?showId=${showId}&seasonId=${firstSeason.id}&episodeId=${eps[0].id}${searchParams.get('userEmail') ? `&userEmail=${encodeURIComponent(searchParams.get('userEmail')!)}` : ''}`);
+                return;
+              }
+            }
+          } else {
+            // No seasons exist, let's create one automatically!
+            const createRes = await fetch(`${getApiUrl()}/api/seasons`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ showId, seasonNumber: 1 })
+            });
+            if (createRes.ok) {
+              const data = await createRes.json();
+              router.replace(`/dashboard?showId=${showId}&seasonId=${data.season.id}&episodeId=${data.episodes[0].id}${searchParams.get('userEmail') ? `&userEmail=${encodeURIComponent(searchParams.get('userEmail')!)}` : ''}`);
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Error resolving active episode', e);
+      }
+    }
+  };
+
   // Load show details from API on mount
   useEffect(() => {
-    fetchShowData();
-    fetchBillingData();
-    fetchProductionTimeline();
-    fetchSocialAccounts();
+    if (showId && episodeId === 'eps-default') {
+      resolveActiveEpisode();
+    } else {
+      fetchShowData();
+      fetchBillingData();
+      fetchProductionTimeline();
+      fetchSocialAccounts();
+    }
 
     const userEmail = searchParams.get('userEmail');
     if (userEmail) {
