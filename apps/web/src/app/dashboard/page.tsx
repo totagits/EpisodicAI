@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   LogOut,
   FolderOpen,
+  ArrowLeft,
   DollarSign,
   Workflow,
   Plus
@@ -379,11 +380,17 @@ function DashboardContent() {
       <main className="flex-1 flex flex-col overflow-hidden bg-brand-bg">
         {/* Top Header navbar bar */}
         <header className="h-14 border-b border-brand-border bg-brand-card/75 flex items-center justify-between px-8 text-xs font-semibold">
-          <div className="flex items-center gap-3">
-            <span className="text-gray-500">Active Show:</span>
-            <span className="text-white font-bold text-sm bg-brand-border px-3 py-1 rounded">
-              {show?.title || "Gravity's Belief"}
-            </span>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-brand-border hover:bg-[#1a1b2e] border border-brand-border hover:text-white text-gray-300 font-bold transition">
+              <ArrowLeft className="w-3.5 h-3.5 text-brand-cyan" /> Back to Home
+            </Link>
+            <span className="text-gray-700 font-normal">|</span>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500">Active Show:</span>
+              <span className="text-white font-bold text-sm bg-brand-border px-3 py-1 rounded">
+                {show?.title || "Gravity's Belief"}
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-xs text-gray-400">Autopilot mode:</span>
