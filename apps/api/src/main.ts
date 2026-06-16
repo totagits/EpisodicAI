@@ -23,7 +23,7 @@ const database = {
   ],
   credits: {
     'wsp-default': { balance: 250.0, reserved: 0.0 }
-  },
+  } as Record<string, { balance: number; reserved: number }>,
   ledger: [] as any[],
   shows: [] as any[],
   bibles: {} as Record<string, any>,
