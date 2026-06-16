@@ -111,39 +111,43 @@ export default function MarketingLandingPage() {
   const calcResult = getCalculatedPrice();
 
   return (
-    <div className="relative min-h-screen bg-brand-bg text-white sky-grid">
+    <div className="relative min-h-screen bg-brand-bg text-white sky-grid overflow-hidden">
+      {/* Background Ambient Glows */}
+      <div className="ambient-glow-violet top-20 left-10 pointer-events-none" />
+      <div className="ambient-glow-gold top-[350px] right-20 pointer-events-none" />
+
       {/* Navbar */}
       <nav className="sticky top-0 z-50 glass-panel border-b border-brand-border py-4 px-6 md:px-12 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded bg-gradient-to-tr from-brand-violet to-brand-cyan flex items-center justify-center font-bold text-xl text-white">E</div>
-          <span className="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">EpisodicAI</span>
+          <div className="w-9 h-9 rounded bg-gradient-to-tr from-brand-gold via-brand-violet to-brand-cyan flex items-center justify-center font-bold text-xl text-white shadow-md shadow-brand-gold/15">E</div>
+          <span className="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-brand-gold to-gray-400">EpisodicAI</span>
         </div>
         <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300 font-medium">
-          <a href="#features" className="hover:text-brand-cyan transition">Features</a>
-          <a href="#workflow" className="hover:text-brand-cyan transition">How It Works</a>
-          <a href="#router" className="hover:text-brand-cyan transition">Cost Router</a>
-          <a href="#pricing" className="hover:text-brand-cyan transition">Pricing</a>
+          <a href="#features" className="hover:text-brand-gold transition">Features</a>
+          <a href="#workflow" className="hover:text-brand-gold transition">How It Works</a>
+          <a href="#router" className="hover:text-brand-gold transition">Cost Router</a>
+          <a href="#pricing" className="hover:text-brand-gold transition">Pricing</a>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/signin" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md border border-brand-violet hover:bg-brand-violet/10 text-brand-violet transition">
+          <Link href="/signin" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md border border-brand-gold/30 hover:bg-brand-gold/10 text-brand-gold transition">
             Sign In
           </Link>
-          <Link href="/onboarding" className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-bold rounded-md bg-gradient-to-r from-brand-violet to-brand-violet/90 hover:from-brand-violet hover:to-brand-cyan text-white shadow-lg shadow-brand-violet/20 hover:shadow-brand-cyan/20 transition">
-            Start Creating <ChevronRight className="w-4 h-4" />
+          <Link href="/onboarding" className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-bold rounded-md bg-gradient-to-r from-brand-gold via-brand-violet to-brand-cyan hover:brightness-110 text-white shadow-lg shadow-brand-violet/10 transition">
+            Start Creating <ChevronRight className="w-4 h-4 text-brand-gold" />
           </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <header className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <header className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center relative z-10">
         {/* Left Column */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 text-xs rounded-full bg-brand-violet/10 border border-brand-violet/30 text-brand-violet">
+          <div className="inline-flex items-center gap-2 px-3 py-1 text-xs rounded-full bg-brand-gold/10 border border-brand-gold/35 text-brand-gold font-mono tracking-wider uppercase text-[10px]">
             <Sparkles className="w-3.5 h-3.5" /> Autonomous Showrunner OS
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white tracking-tight">
             Create a show once.<br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-violet via-brand-cyan to-white">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-gold via-white to-gray-400">
               Let the story live on.
             </span>
           </h1>
@@ -155,40 +159,58 @@ export default function MarketingLandingPage() {
           <div className="grid grid-cols-3 gap-6 py-4 border-y border-brand-border/60">
             <div>
               <div className="text-2xl md:text-3xl font-extrabold text-white">100%</div>
-              <div className="text-xs text-gray-400">Canon Continuity</div>
+              <div className="text-xs text-gray-400 font-mono tracking-wide uppercase text-[9px] mt-1">Canon Continuity</div>
             </div>
             <div>
-              <div className="text-2xl md:text-3xl font-extrabold text-white">65%+</div>
-              <div className="text-xs text-gray-400">Target Profit Margin</div>
+              <div className="text-2xl md:text-3xl font-extrabold text-brand-gold">65%+</div>
+              <div className="text-xs text-gray-400 font-mono tracking-wide uppercase text-[9px] mt-1">Target Profit Margin</div>
             </div>
             <div>
               <div className="text-2xl md:text-3xl font-extrabold text-white">&lt; 1 hr</div>
-              <div className="text-xs text-gray-400">Episode Cycle Time</div>
+              <div className="text-xs text-gray-400 font-mono tracking-wide uppercase text-[9px] mt-1">Episode Cycle</div>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-4 pt-2">
-            <Link href="/onboarding" className="inline-flex items-center gap-2 px-6 py-3.5 font-bold rounded-lg bg-gradient-to-r from-brand-violet to-brand-cyan hover:brightness-110 text-white shadow-xl shadow-brand-violet/20 transition">
-              Create Your First Series <ChevronRight className="w-5 h-5" />
+            <Link href="/onboarding" className="inline-flex items-center gap-2 px-6 py-3.5 font-bold rounded-lg bg-gradient-to-r from-brand-gold via-brand-violet to-brand-cyan hover:brightness-110 text-white shadow-xl shadow-brand-gold/10 transition">
+              Create Your First Series <ChevronRight className="w-5 h-5 text-brand-gold" />
             </Link>
-            <a href="#workflow" className="inline-flex items-center gap-2 px-6 py-3.5 font-semibold rounded-lg bg-brand-card hover:bg-brand-border/50 border border-brand-border text-gray-200 transition">
-              <Play className="w-4.5 h-4.5 fill-gray-200" /> Watch AI Work
+            <a href="#workflow" className="inline-flex items-center gap-2 px-6 py-3.5 font-semibold rounded-lg bg-brand-card hover:bg-brand-border/50 border border-brand-border text-gray-300 transition">
+              <Play className="w-4.5 h-4.5 fill-gray-300 text-brand-gold" /> Watch AI Work
             </a>
           </div>
         </div>
 
-        {/* Right Column - Interactive Pipeline Visualization */}
-        <div className="lg:col-span-6 relative">
-          <div className="w-full rounded-xl border border-brand-border glass-panel p-6 shadow-2xl space-y-6">
+        {/* Right Column - Interactive Pipeline Visualization with designcode.io float layers */}
+        <div className="lg:col-span-6 relative flex items-center justify-center py-8">
+          {/* Floating background shape */}
+          <div className="absolute -inset-2 bg-gradient-to-tr from-brand-gold/10 to-brand-violet/10 rounded-2xl blur-xl opacity-70 float-slow pointer-events-none" />
+
+          {/* Floating Card 1: Top Right Overlap (designcode.io depth) */}
+          <div className="absolute -top-4 -right-2 bg-brand-card/95 border border-brand-gold/25 p-3 rounded-lg shadow-2xl float-medium z-20 w-44 space-y-1">
+            <span className="text-[9px] font-mono font-bold text-brand-gold uppercase tracking-wider">Automated Ledger</span>
+            <div className="text-sm font-extrabold text-white font-mono">+1,250.00 cr</div>
+            <div className="text-[10px] text-gray-400">Licensing Royalty payout</div>
+          </div>
+
+          {/* Floating Card 2: Bottom Left Overlap (designcode.io depth) */}
+          <div className="absolute -bottom-6 -left-2 bg-brand-card/95 border border-brand-violet/30 p-3 rounded-lg shadow-2xl float-fast z-20 w-44 space-y-1">
+            <span className="text-[9px] font-mono font-bold text-brand-violet uppercase tracking-wider">Continuity Score</span>
+            <div className="text-sm font-extrabold text-brand-cyan font-mono">98 / 100</div>
+            <div className="text-[10px] text-gray-400">0 contradictions found</div>
+          </div>
+
+          {/* Main Visualizer Board */}
+          <div className="w-full rounded-xl border border-brand-border bg-brand-card/70 backdrop-blur p-6 shadow-2xl space-y-6 float-slow relative z-10">
             <div className="flex items-center justify-between border-b border-brand-border/60 pb-4">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-brand-cyan animate-pulse"></span>
-                <span className="text-xs font-semibold text-gray-400">SERIES PIPELINE WORKSPACE</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-brand-gold animate-pulse"></span>
+                <span className="text-xs font-semibold text-gray-400 tracking-wider">SERIES PIPELINE WORKSPACE</span>
               </div>
               <div className="flex gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500/30"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/30"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-green-500/30"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500/20"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/20"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500/20"></span>
               </div>
             </div>
 
@@ -196,7 +218,7 @@ export default function MarketingLandingPage() {
             <div className="space-y-4">
               <div className="p-4 rounded-lg bg-brand-card/90 border border-brand-border/80 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded bg-gradient-to-br from-brand-violet/20 to-brand-cyan/20 border border-brand-violet/30 flex items-center justify-center text-brand-cyan">
+                  <div className="w-12 h-12 rounded bg-gradient-to-br from-brand-gold/20 to-brand-violet/20 border border-brand-gold/30 flex items-center justify-center text-brand-gold">
                     <Film className="w-6 h-6" />
                   </div>
                   <div>
@@ -204,23 +226,23 @@ export default function MarketingLandingPage() {
                     <p className="text-xs text-gray-400">S1 • E1 "The Ground Zero"</p>
                   </div>
                 </div>
-                <div className="px-2.5 py-1 text-xs rounded bg-brand-violet/20 border border-brand-violet/40 text-brand-violet font-semibold">
+                <div className="px-2.5 py-1 text-xs rounded bg-brand-gold/15 border border-brand-gold/40 text-brand-gold font-semibold uppercase tracking-wider">
                   Generating
                 </div>
               </div>
 
               {/* Status Stages */}
               <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                <div className="p-2.5 rounded bg-brand-violet/20 border border-brand-violet/30 font-semibold text-brand-violet">
+                <div className="p-2.5 rounded bg-brand-border/80 border border-brand-border/40 font-semibold text-gray-300">
                   Bible
                 </div>
-                <div className="p-2.5 rounded bg-brand-violet/20 border border-brand-violet/30 font-semibold text-brand-violet">
+                <div className="p-2.5 rounded bg-brand-border/80 border border-brand-border/40 font-semibold text-gray-300">
                   Script
                 </div>
-                <div className="p-2.5 rounded bg-brand-cyan/20 border border-brand-cyan/30 font-semibold text-brand-cyan animate-pulse">
+                <div className="p-2.5 rounded bg-brand-gold/15 border border-brand-gold/35 font-semibold text-brand-gold animate-pulse">
                   Rendering
                 </div>
-                <div className="p-2.5 rounded bg-brand-border/50 border border-brand-border text-gray-500">
+                <div className="p-2.5 rounded bg-brand-border/30 border border-brand-border text-gray-600">
                   Publish
                 </div>
               </div>

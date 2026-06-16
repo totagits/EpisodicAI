@@ -69,3 +69,65 @@ body {
     linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
+
+/* Premium Floating Animations (designcode.io style) */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(0.3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes float-reverse {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(8px) rotate(-0.3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.float-slow {
+  animation: float 9s ease-in-out infinite;
+}
+
+.float-medium {
+  animation: float-reverse 7s ease-in-out infinite;
+}
+
+.float-fast {
+  animation: float 5s ease-in-out infinite;
+}
+
+/* Linear-style border glow effects */
+.linear-glow-card {
+  position: relative;
+  background: rgba(13, 15, 25, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.linear-glow-card:hover {
+  border-color: rgba(197, 168, 128, 0.25);
+  box-shadow: 0 10px 40px rgba(197, 168, 128, 0.04);
+  transform: translateY(-2px);
+}
+
+/* Radial Glow Backdrops */
+.ambient-glow-violet {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-glow-gold {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(197, 168, 128, 0.02) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+

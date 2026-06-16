@@ -13,6 +13,7 @@ module.exports = {
           violet: '#8b5cf6',
           cyan: '#06b6d4',
           amber: '#f59e0b',
+          gold: '#c5a880',
         }
       }
     },
