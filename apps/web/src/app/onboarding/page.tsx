@@ -39,6 +39,7 @@ export default function OnboardingWizard() {
 
   const [characterName, setCharacterName] = useState('Luna');
   const [characterRole, setCharacterRole] = useState('primary');
+  const [characterImage, setCharacterImage] = useState<string | null>(null);
 
   const [budgetPerEpisode, setBudgetPerEpisode] = useState(50);
   const [qualityTier, setQualityTier] = useState('STANDARD');
@@ -336,11 +337,59 @@ export default function OnboardingWizard() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-lg bg-brand-card/60 border border-brand-border flex items-center gap-4">
-                <div className="w-16 h-16 rounded bg-brand-border/60 flex items-center justify-center text-xs text-gray-400">No Image</div>
+              <div className="p-4 rounded-lg bg-brand-card/60 border border-brand-border flex items-center gap-4 relative">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  id="char-image-upload" 
+                  className="hidden" 
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setCharacterImage(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+                
+                {characterImage ? (
+                  <div className="relative w-16 h-16 rounded overflow-hidden border border-brand-violet/50 shrink-0">
+                    <img 
+                      src={characterImage} 
+                      alt="Uploaded character reference" 
+                      className="w-full h-full object-cover" 
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setCharacterImage(null)}
+                      className="absolute top-0 right-0 bg-red-600/80 hover:bg-red-600 text-white rounded-bl p-0.5 text-[9px] font-bold"
+                      title="Remove image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <label 
+                    htmlFor="char-image-upload" 
+                    className="w-16 h-16 rounded bg-brand-border/60 flex flex-col items-center justify-center text-[10px] text-gray-400 hover:bg-brand-border cursor-pointer transition border border-dashed border-gray-600 hover:border-brand-violet shrink-0"
+                  >
+                    <span>No Image</span>
+                    <span className="text-[8px] text-brand-cyan mt-1">Upload</span>
+                  </label>
+                )}
+                
                 <div>
                   <h4 className="text-sm font-bold text-white">Visual Identity reference Pack</h4>
-                  <p className="text-xs text-gray-400">Upload characters visual images or reference seeds for visual consistency checks.</p>
+                  <p className="text-xs text-gray-400 mb-2">
+                    {characterImage ? "Character reference image uploaded." : "Upload character visual images or reference seeds for visual consistency checks."}
+                  </p>
+                  {!characterImage && (
+                    <label 
+                      htmlFor="char-image-upload" 
+                      className="inline-block px-3 py-1 rounded bg-brand-violet/20 hover:bg-brand-violet/30 border border-brand-violet/40 text-brand-violet text-xs font-bold cursor-pointer transition"
+                    >
+                      Choose File
+                    </label>
+                  )}
                 </div>
               </div>
             </div>
