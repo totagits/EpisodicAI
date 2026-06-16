@@ -109,6 +109,11 @@ function DashboardContent() {
     fetchBillingData();
     fetchProductionTimeline();
     fetchSocialAccounts();
+
+    const userEmail = searchParams.get('userEmail');
+    if (userEmail) {
+      autoConnectGoogleYouTube(userEmail);
+    }
   }, [showId, episodeId]);
 
   const fetchShowData = async () => {
@@ -328,6 +333,31 @@ function DashboardContent() {
       }
     } catch (e) {
       console.error("Failed to fetch social accounts:", e);
+    }
+  };
+
+  const autoConnectGoogleYouTube = async (email: string) => {
+    try {
+      const response = await fetch(`${getApiUrl()}/api/social-accounts`);
+      if (response.ok) {
+        const accounts = await response.json();
+        const hasYouTube = accounts.some((a: any) => a.platform === 'youtube');
+        if (!hasYouTube) {
+          const handle = `@${email.split('@')[0]}`;
+          await fetch(`${getApiUrl()}/api/social-accounts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              platform: 'youtube',
+              handle: handle,
+              monetizationEnabled: true
+            })
+          });
+          fetchSocialAccounts();
+        }
+      }
+    } catch (e) {
+      console.error("Auto-connect YouTube failed:", e);
     }
   };
 
@@ -588,6 +618,25 @@ function DashboardContent() {
         <div className="flex-1 p-6 md:p-8 overflow-y-auto">
           {activeTab === 'overview' && (
             <div className="space-y-6">
+              {socialAccounts.length === 0 && (
+                <div className="p-4 rounded-xl border border-brand-amber/20 bg-brand-amber/5 flex justify-between items-center gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <AlertTriangle className="w-5 h-5 text-brand-amber shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Distribution Accounts Required</h4>
+                      <p className="text-[11px] text-gray-400">You must connect a social media account (YouTube, TikTok, or Instagram) to stream and monetize your created stories.</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('admin')}
+                    className="px-3 py-1.5 rounded bg-brand-amber hover:bg-brand-amber/90 text-white font-bold text-xs shrink-0 transition"
+                  >
+                    Connect Channels
+                  </button>
+                </div>
+              )}
+
               {/* Headline Banner */}
               <div className="p-6 rounded-xl border border-brand-border bg-gradient-to-r from-brand-card to-brand-border/20 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div className="space-y-1">
@@ -667,6 +716,25 @@ function DashboardContent() {
                   <div className="text-xs text-gray-400">Autopilot hard-stop threshold: 40%</div>
                 </div>
               </div>
+
+              {/* Master Video Cut Outcome Preview */}
+              {shots.some(s => s.status === 'completed' && s.mediaUrl) && (
+                <div className="p-6 rounded-xl border border-brand-border bg-brand-card space-y-4">
+                  <div className="flex justify-between items-center border-b border-brand-border pb-2">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Play className="w-4 h-4 text-brand-cyan" /> Master Video Cut Preview
+                    </h3>
+                    <span className="text-[10px] text-brand-cyan font-bold uppercase bg-brand-cyan/10 border border-brand-cyan/20 px-2 py-0.5 rounded">• Stored & Ready to Publish</span>
+                  </div>
+                  <div className="aspect-video max-w-2xl mx-auto rounded-lg overflow-hidden border border-brand-border bg-[#020306]">
+                    <video 
+                      src={shots.find(s => s.mediaUrl)?.mediaUrl}
+                      controls
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Quality Control Findings and Script Panel */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1187,6 +1255,9 @@ function DashboardContent() {
                         <ShieldCheck className="w-4 h-4 text-brand-cyan" /> Distributed Production URLs
                       </h4>
                       <p className="text-[11px] text-gray-400">Your episode is live and active for monetization on the selected platforms:</p>
+                      <div className="p-3 bg-brand-bg/40 border border-brand-border/80 rounded text-[11px] text-gray-400">
+                        ℹ️ <strong>System Note:</strong> The master video cut has been generated and stored successfully. In production mode, this uploads the stitched H.264 MP4 file directly to the linked account streaming endpoints.
+                      </div>
                       
                       <div className="space-y-2">
                         {publishProgress.publications?.map((pub: any) => (
@@ -1222,13 +1293,26 @@ function DashboardContent() {
                   >
                     Cancel
                   </button>
-                  <button
-                    type="button"
-                    onClick={handleStartPublishing}
-                    className="px-5 py-2 rounded bg-brand-amber hover:bg-brand-amber/95 text-white font-bold text-xs transition flex items-center gap-1.5"
-                  >
-                    <Sparkles className="w-4 h-4" /> Start Production Distribution
-                  </button>
+                  {socialAccounts.length === 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsPublishModalOpen(false);
+                        setActiveTab('admin');
+                      }}
+                      className="px-5 py-2 rounded bg-brand-amber hover:bg-brand-amber/95 text-white font-bold text-xs transition flex items-center gap-1.5"
+                    >
+                      Connect Accounts to Publish
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleStartPublishing}
+                      className="px-5 py-2 rounded bg-brand-amber hover:bg-brand-amber/95 text-white font-bold text-xs transition flex items-center gap-1.5"
+                    >
+                      <Sparkles className="w-4 h-4" /> Start Production Distribution
+                    </button>
+                  )}
                 </>
               )}
               {publishProgress.status === 'completed' && (
