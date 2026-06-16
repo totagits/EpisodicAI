@@ -13,10 +13,11 @@ import {
   ChevronRight, 
   Layers, 
   Workflow, 
-  Database,
-  BarChart3,
-  FlameKindling,
-  Users
+  Database, 
+  BarChart3, 
+  FlameKindling, 
+  Users,
+  ArrowUp
 } from 'lucide-react';
 
 export default function MarketingLandingPage() {
@@ -29,6 +30,25 @@ export default function MarketingLandingPage() {
   // --- Pricing Calculator State ---
   const [calcEpisodes, setCalcEpisodes] = useState(4);
   const [calcTier, setCalcTier] = useState<'standard' | 'high' | 'ultra'>('high');
+
+  // --- Scroll to Top State ---
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 400) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const demoLogs = [
     { time: "12:04:10", service: "CanonLibrarian", text: "Verified screenplay scene 4 continuity: 0 contradictions found.", color: "text-brand-cyan" },
@@ -682,6 +702,15 @@ export default function MarketingLandingPage() {
         </div>
         <p>© 2026 EpisodicAI. All rights reserved. Created for Next-Generation Creators.</p>
       </footer>
+
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-gradient-to-tr from-brand-violet to-brand-cyan text-white shadow-lg shadow-brand-violet/20 hover:brightness-110 transition animate-fade-in"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 }

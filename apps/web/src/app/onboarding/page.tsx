@@ -516,7 +516,14 @@ export default function OnboardingWizard() {
 
         {/* Footer Navigation Buttons */}
         <div className="bg-brand-card/90 border-t border-brand-border py-4 px-6 flex justify-between items-center">
-          {step > 1 && (
+          {step === 1 ? (
+            <Link 
+              href="/"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-semibold hover:bg-brand-border transition text-gray-300"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back to Home
+            </Link>
+          ) : (
             <button 
               onClick={() => {
                 if (step === 6) {
