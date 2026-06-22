@@ -191,7 +191,25 @@ export class MockProvider implements ILLMProvider, IImageGenerationProvider, IVi
 
   public async generateVideo(request: GenerationRequest): Promise<ProviderResponse<{ videoUrl: string }>> {
     const start = Date.now();
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const seconds = request.durationSeconds || 4;
+
+    if (seconds >= 60) {
+      console.log(`[Strategy A Chaining] Simulating sequential video chaining for ${seconds} seconds...`);
+      const segmentDuration = 8;
+      const totalSegments = Math.ceil(seconds / segmentDuration);
+      console.log(`[Strategy A] Generating ${totalSegments} segments of ${segmentDuration}s each.`);
+      let lastFrameUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop";
+      
+      for (let s = 1; s <= totalSegments; s++) {
+        console.log(`  - Segment ${s}/${totalSegments}: Chaining with last frame reference: ${lastFrameUrl}`);
+        // Simulate minor delay per segment build
+        await new Promise(resolve => setTimeout(resolve, 50));
+        lastFrameUrl = `https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop#segment-${s}`;
+      }
+      console.log(`[Strategy A] Stitching completed. Stitched video URL generated.`);
+    } else {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
     
     // Standard mock videos
     const mockVideos = [
@@ -201,7 +219,6 @@ export class MockProvider implements ILLMProvider, IImageGenerationProvider, IVi
     ];
     const videoUrl = mockVideos[Math.floor(Math.random() * mockVideos.length)];
 
-    const seconds = request.durationSeconds || 4;
     return {
       success: true,
       data: { videoUrl },
@@ -263,7 +280,15 @@ export class ProviderRegistry {
       { id: 'p4', providerName: 'OpenAI', modelName: 'gpt-4o', capability: 'llm', costUnit: 'token', costPerUnit: 0.01, resolutionMultiplier: 1.0, effectiveDate: new Date() },
       { id: 'p5', providerName: 'MockAI', modelName: 'MockImageGen-v2', capability: 'image-generation', costUnit: 'image', costPerUnit: 0.2, resolutionMultiplier: 1.0, effectiveDate: new Date() },
       { id: 'p6', providerName: 'MockAI', modelName: 'MockVideoGen-v2', capability: 'video-generation', costUnit: 'second', costPerUnit: 1.0, resolutionMultiplier: 1.0, effectiveDate: new Date() },
-      { id: 'p7', providerName: 'MockAI', modelName: 'MockLipSync-v2', capability: 'lip-sync', costUnit: 'second', costPerUnit: 0.8, resolutionMultiplier: 1.0, effectiveDate: new Date() }
+      { id: 'p7', providerName: 'MockAI', modelName: 'MockLipSync-v2', capability: 'lip-sync', costUnit: 'second', costPerUnit: 0.8, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p8', providerName: 'Google', modelName: 'Veo-2.0-Generate', capability: 'video-generation', costUnit: 'second', costPerUnit: 0.12, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p9', providerName: 'Runway', modelName: 'Runway-Gen3-Alpha', capability: 'video-generation', costUnit: 'second', costPerUnit: 0.20, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p10', providerName: 'Seedance', modelName: 'Seedance-Video-v1', capability: 'video-generation', costUnit: 'second', costPerUnit: 0.10, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p11', providerName: 'Kling AI', modelName: 'Kling-Pro-v3', capability: 'video-generation', costUnit: 'second', costPerUnit: 0.08, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p12', providerName: 'fal.ai', modelName: 'Wan-2.1-Cinematic', capability: 'video-generation', costUnit: 'second', costPerUnit: 0.02, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p13', providerName: 'MiniMax', modelName: 'MiniMax-Video-v2', capability: 'video-generation', costUnit: 'second', costPerUnit: 0.08, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p14', providerName: 'Tencent', modelName: 'HunyuanVideo', capability: 'video-generation', costUnit: 'second', costPerUnit: 0.025, resolutionMultiplier: 1.0, effectiveDate: new Date() },
+      { id: 'p15', providerName: 'RunPod', modelName: 'Wan-2.1-SelfHosted', capability: 'video-generation', costUnit: 'second', costPerUnit: 0.001, resolutionMultiplier: 1.0, effectiveDate: new Date() }
     ];
   }
 
@@ -276,3 +301,178 @@ export class ProviderRegistry {
     ];
   }
 }
+
+// ─── fal.ai Video Provider ────────────────────────────────────────────────────
+
+export class FalAiProvider implements IVideoGenerationProvider {
+  private apiKey: string;
+  private version = 'fal-wan-2.1-cinematic';
+
+  constructor(apiKey?: string) {
+    this.apiKey = apiKey || process.env.FAL_AI_KEY || '';
+    if (!this.apiKey) throw new Error('FAL_AI_KEY not set');
+  }
+
+  public async generateVideo(request: GenerationRequest): Promise<ProviderResponse<{ videoUrl: string }>> {
+    const start = Date.now();
+    const duration = request.durationSeconds || 5;
+
+    try {
+      // Submit job to fal.ai queue
+      const submitRes = await fetch('https://queue.fal.run/fal-ai/wan-v2.1/text-to-video', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Key ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: request.prompt,
+          duration: duration <= 5 ? '5s' : '10s',
+          aspect_ratio: request.aspectRatio === '9:16' ? '9:16' : '16:9',
+          resolution: '720p',
+          num_inference_steps: 20,
+        }),
+      });
+
+      if (!submitRes.ok) {
+        const err = await submitRes.text();
+        throw new Error(`fal.ai submit failed: ${err}`);
+      }
+
+      const { request_id } = await submitRes.json();
+
+      // Poll for completion (max 3 minutes)
+      const pollUrl = `https://queue.fal.run/fal-ai/wan-v2.1/requests/${request_id}`;
+      for (let attempt = 0; attempt < 36; attempt++) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await fetch(pollUrl, {
+          headers: { 'Authorization': `Key ${this.apiKey}` },
+        });
+        const pollData = await pollRes.json();
+
+        if (pollData.status === 'COMPLETED') {
+          const videoUrl = pollData.output?.video?.url || pollData.output?.video_url;
+          return {
+            success: true,
+            data: { videoUrl },
+            costCredits: 0.02 * duration,
+            latencyMs: Date.now() - start,
+            providerVersion: this.version,
+          };
+        }
+        if (pollData.status === 'FAILED') {
+          throw new Error(`fal.ai job failed: ${JSON.stringify(pollData.error)}`);
+        }
+      }
+
+      throw new Error('fal.ai generation timed out after 3 minutes');
+    } catch (err: any) {
+      return {
+        success: false,
+        error: { code: 'FAL_AI_ERROR', message: err.message, isRetryable: true },
+        costCredits: 0,
+        latencyMs: Date.now() - start,
+        providerVersion: this.version,
+      };
+    }
+  }
+}
+
+// ─── ElevenLabs TTS Provider ──────────────────────────────────────────────────
+
+export class ElevenLabsProvider implements ITextToSpeechProvider {
+  private apiKey: string;
+  private version = 'elevenlabs-v2';
+  private defaultVoiceId = '21m00Tcm4TlvDq8ikWAM'; // "Rachel" — professional, clear
+
+  constructor(apiKey?: string) {
+    this.apiKey = apiKey || process.env.ELEVENLABS_API_KEY || '';
+    if (!this.apiKey) throw new Error('ELEVENLABS_API_KEY not set');
+  }
+
+  public async generateSpeech(text: string, voiceId: string): Promise<ProviderResponse<{ audioUrl: string; durationSeconds: number }>> {
+    const start = Date.now();
+    // ElevenLabs voice IDs are UUIDs; fall back to default if we're passed a custom format
+    const resolvedVoiceId = voiceId?.match(/^[0-9a-f]{20,}$/) ? voiceId : this.defaultVoiceId;
+
+    try {
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${resolvedVoiceId}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': this.apiKey,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg',
+        },
+        body: JSON.stringify({
+          text,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`ElevenLabs TTS failed: ${errText}`);
+      }
+
+      // ElevenLabs returns audio bytes directly — for Cloud Run, we'd upload to GCS
+      // For now, return a data URL from the buffer (works for short clips)
+      const audioBuffer = await response.arrayBuffer();
+      const base64 = Buffer.from(audioBuffer).toString('base64');
+      const audioUrl = `data:audio/mpeg;base64,${base64}`;
+      const durationSeconds = Math.ceil(text.length / 15); // ~15 chars/sec estimate
+
+      return {
+        success: true,
+        data: { audioUrl, durationSeconds },
+        costCredits: 0.05 * text.length,
+        latencyMs: Date.now() - start,
+        providerVersion: this.version,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: { code: 'ELEVENLABS_ERROR', message: err.message, isRetryable: true },
+        costCredits: 0,
+        latencyMs: Date.now() - start,
+        providerVersion: this.version,
+      };
+    }
+  }
+}
+
+// ─── Provider Factory ─────────────────────────────────────────────────────────
+
+export class ProviderFactory {
+  /**
+   * Returns fal.ai if FAL_AI_KEY is set, otherwise falls back to MockProvider.
+   */
+  public static getVideoProvider(): IVideoGenerationProvider {
+    if (process.env.FAL_AI_KEY) {
+      try { return new FalAiProvider(); } catch { /* fall through */ }
+    }
+    return new MockProvider();
+  }
+
+  /**
+   * Returns ElevenLabs if ELEVENLABS_API_KEY is set, otherwise falls back to MockProvider.
+   */
+  public static getSpeechProvider(): ITextToSpeechProvider {
+    if (process.env.ELEVENLABS_API_KEY) {
+      try { return new ElevenLabsProvider(); } catch { /* fall through */ }
+    }
+    return new MockProvider();
+  }
+
+  /**
+   * Returns the full MockProvider for operations not yet covered by live providers.
+   */
+  public static getMockProvider(): MockProvider {
+    return new MockProvider();
+  }
+
+  public static isLive(): boolean {
+    return process.env.PROVIDER_MODE === 'live' && !!process.env.FAL_AI_KEY;
+  }
+}
+

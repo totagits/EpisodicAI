@@ -308,6 +308,7 @@ export interface Shot {
   actualCostCredits?: number;
   status: 'pending' | 'generating' | 'completed' | 'failed';
   mediaUrl?: string;
+  internalRequest?: string;
 }
 
 export interface StoryboardFrame {

@@ -119,7 +119,7 @@ export default function MarketingLandingPage() {
       {/* Navbar */}
       <nav className="sticky top-0 z-50 glass-panel border-b border-brand-border py-4 px-6 md:px-12 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded bg-gradient-to-tr from-brand-gold via-brand-violet to-brand-cyan flex items-center justify-center font-bold text-xl text-white shadow-md shadow-brand-gold/15">E</div>
+          <img src="/logo.png" alt="Logo" className="w-9 h-9 rounded object-cover shadow-md" />
           <span className="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-brand-gold to-gray-400">EpisodicAI</span>
         </div>
         <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300 font-medium">

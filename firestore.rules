@@ -1,0 +1,106 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper functions ────────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isWorkspaceMember(workspaceId) {
+      return isSignedIn() && request.auth.token.workspaceId == workspaceId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin';
+    }
+
+    // ─── Workspaces ──────────────────────────────────────────────────────────
+    match /workspaces/{workspaceId} {
+      allow read: if isWorkspaceMember(workspaceId) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ─── Shows ───────────────────────────────────────────────────────────────
+    match /shows/{showId} {
+      allow read, write: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow create: if isSignedIn();
+    }
+
+    // ─── Bibles ──────────────────────────────────────────────────────────────
+    match /bibles/{bibleId} {
+      allow read, write: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow create: if isSignedIn();
+    }
+
+    // ─── Characters ──────────────────────────────────────────────────────────
+    match /characters/{charId} {
+      allow read, write: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow create: if isSignedIn();
+    }
+
+    // ─── Seasons ─────────────────────────────────────────────────────────────
+    match /seasons/{seasonId} {
+      allow read, write: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow create: if isSignedIn();
+    }
+
+    // ─── Episodes ────────────────────────────────────────────────────────────
+    match /episodes/{episodeId} {
+      allow read, write: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow create: if isSignedIn();
+    }
+
+    // ─── Shots ───────────────────────────────────────────────────────────────
+    match /shots/{shotId} {
+      allow read, write: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow create: if isSignedIn();
+    }
+
+    // ─── Credits / Ledger ────────────────────────────────────────────────────
+    match /credits/{workspaceId} {
+      // Credits can only be read by workspace members
+      // Credits can only be written by admin/server (Firebase Admin SDK bypasses rules)
+      allow read: if isWorkspaceMember(workspaceId);
+      allow write: if isAdmin();
+    }
+
+    match /creditLedger/{entryId} {
+      allow read: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow write: if isAdmin();
+    }
+
+    // ─── Social Accounts ─────────────────────────────────────────────────────
+    match /socialAccounts/{accountId} {
+      allow read, write: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+    }
+
+    // ─── Publications ────────────────────────────────────────────────────────
+    match /publications/{pubId} {
+      allow read: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow write: if isAdmin();
+    }
+
+    // ─── Jobs (render queue) ─────────────────────────────────────────────────
+    match /jobs/{jobId} {
+      allow read: if isSignedIn() &&
+        isWorkspaceMember(resource.data.workspaceId);
+      allow write: if isAdmin();
+    }
+
+    // ─── Deny all others ─────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,17 @@
+# .gcloudignore - controls what gcloud uploads to Cloud Build
+# Both API and Web deployments use the monorepo root as build context.
+
+node_modules
+.git
+*.log
+.env
+.env.local
+.DS_Store
+
+# Exclude node_modules within apps (reinstalled during build)
+apps/web/node_modules
+apps/api/node_modules
+apps/web/.next
+
+# Everything else is uploaded (packages/, apps/web/src/, apps/api/src/, etc.)
+# apps/web/out is NOT excluded (needed for web nginx serve)

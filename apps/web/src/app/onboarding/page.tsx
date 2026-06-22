@@ -18,6 +18,7 @@ import {
   Film,
   Play
 } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
 
 const getApiUrl = () => {
   if (process.env.NEXT_PUBLIC_API_URL) {
@@ -36,6 +37,7 @@ const getApiUrl = () => {
 
 export default function OnboardingWizard() {
   const router = useRouter();
+  const { getAuthHeaders, user } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -67,15 +69,18 @@ export default function OnboardingWizard() {
   const nextStep = () => setStep(prev => prev + 1);
   const prevStep = () => setStep(prev => prev - 1);
 
-  // Trigger Bible generation agent from api
   const handleGenerateBible = async () => {
     setLoading(true);
     try {
+      const authHeaders = await getAuthHeaders();
+      const demoMode = !user;
       const response = await fetch(`${getApiUrl()}/api/shows`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(demoMode ? { 'X-Demo-Mode': 'true' } : authHeaders),
+        },
         body: JSON.stringify({
-          workspaceId: 'wsp-default',
           title,
           premise,
           characterName,
@@ -130,13 +135,18 @@ export default function OnboardingWizard() {
 
   const handleStartProduction = async () => {
     setLoading(true);
+    const authHeaders = await getAuthHeaders();
+    const demoMode = !user;
     // Seed initial season outline based on generated show
     if (generatedBible) {
       try {
         const showId = generatedBible.showId;
         const response = await fetch(`${getApiUrl()}/api/seasons`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(demoMode ? { 'X-Demo-Mode': 'true' } : authHeaders),
+          },
           body: JSON.stringify({ showId, seasonNumber: 1 })
         });
         const data = await response.json();

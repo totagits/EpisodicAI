@@ -249,14 +249,29 @@ export default function TimelineEditor({ shots, onUpdateShot, onRegenerateShot }
             </div>
           </div>
 
-          {/* Middle Column: Prompt Director */}
-          <div className="space-y-2">
-            <span className="text-gray-500 uppercase font-bold text-[9px] block">Prompt Director (Provider Instructions)</span>
-            <textarea 
-              value={selectedShot.promptText}
-              onChange={e => onUpdateShot(selectedShot.id, { promptText: e.target.value })}
-              className="w-full rounded bg-brand-card border border-brand-border p-2 text-xs text-white h-16 resize-none focus:outline-none focus:border-brand-cyan"
-            />
+          {/* Middle Column: Prompt Director & Abstraction Layer Routing */}
+          <div className="space-y-3">
+            <div>
+              <span className="text-gray-500 uppercase font-bold text-[9px] block">Prompt Director (Provider Instructions)</span>
+              <textarea 
+                value={selectedShot.promptText}
+                onChange={e => onUpdateShot(selectedShot.id, { promptText: e.target.value })}
+                className="w-full rounded bg-brand-card border border-brand-border p-2 text-xs text-white h-14 resize-none focus:outline-none focus:border-brand-cyan"
+              />
+            </div>
+            
+            {selectedShot.internalRequest && (
+              <div className="rounded bg-brand-violet/5 border border-brand-violet/25 p-2 space-y-1">
+                <span className="text-[9px] font-bold text-brand-violet uppercase tracking-wider block">Internal Abstraction Request (Routing Input)</span>
+                <p className="text-[10px] text-gray-300 font-mono leading-relaxed italic bg-[#04050a] p-1.5 rounded border border-brand-border/40">
+                  "{selectedShot.internalRequest}"
+                </p>
+                <div className="flex justify-between items-center text-[9px] text-gray-500 pt-0.5">
+                  <span>Provider Routed: <strong className="text-brand-cyan">{selectedShot.providerName}</strong></span>
+                  <span>Model: <strong className="text-brand-gold">{selectedShot.modelName}</strong></span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column: Generation Controls */}
