@@ -607,7 +607,7 @@ function DashboardContent() {
       {/* Sidebar */}
       <aside className="w-64 border-r border-brand-border bg-brand-card flex flex-col">
         <div className="p-4 border-b border-brand-border flex items-center gap-3">
-          <img src="/logo.png" alt="EpisodicAI Logo" className="w-9 h-9 rounded-lg object-cover shadow-md ring-1 ring-brand-violet/30" />
+          <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`} alt="EpisodicAI Logo" className="w-9 h-9 rounded-lg object-cover shadow-md ring-1 ring-brand-violet/30" />
           <div>
             <h4 className="text-sm font-bold text-white leading-tight">Original Studio</h4>
             <span className="text-[10px] text-brand-violet font-bold uppercase tracking-wider">Workspace Admin</span>

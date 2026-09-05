@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: 'EpisodicAI | Autonomous AI Series Studio & Operating System',
   description: 'Create a show once. Let the story live on. Preserve canon, character identities, timeline consistency, and production budgets automatically.',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
-    shortcut: '/logo.png',
+    icon: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`,
+    apple: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`,
+    shortcut: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`,
   },
 };
 

@@ -135,7 +135,7 @@ export default function SignInPage() {
 
         {/* Logo and Header */}
         <div className="text-center space-y-2">
-          <img src="/logo.png" alt="Logo" className="w-12 h-12 rounded object-cover mx-auto shadow-lg shadow-brand-violet/20" />
+          <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`} alt="Logo" className="w-12 h-12 rounded object-cover mx-auto shadow-lg shadow-brand-violet/20" />
           <h2 className="text-2xl font-extrabold tracking-tight">Access Your Studio</h2>
           <p className="text-sm text-gray-400">Sign in to enter the writers&apos; room.</p>
         </div>
