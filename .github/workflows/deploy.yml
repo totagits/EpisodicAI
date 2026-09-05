@@ -1,25 +1,26 @@
-name: Deploy to Cloud Run
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [master, main]
   workflow_dispatch:
 
-env:
-  PROJECT_ID: episodic-ai-studio-2026
-  REGION: us-central1
-  WEB_SERVICE: episodic-ai-web
-  API_SERVICE: episodic-ai-api
-  ORCHESTRATOR_SERVICE: episodic-ai-orchestrator
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  # ── Build & Deploy Web (nginx static export) ────────────────────────────────
-  deploy-web:
-    name: Web → Cloud Run
+  build-and-deploy:
+    name: Build & Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout
@@ -40,115 +41,14 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://episodic-ai-api-26273727080.us-central1.run.app
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          path: apps/web/out
 
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-
-      - name: Create .gcloudignore for web deployment
-        run: |
-          cat > .gcloudignore << 'EOF'
-          node_modules
-          .git
-          *.log
-          .env
-          apps/api
-          apps/web/node_modules
-          apps/web/.next
-          apps/web/src
-          services
-          packages
-          EOF
-
-      - name: Deploy Web to Cloud Run
-        run: |
-          gcloud run deploy ${{ env.WEB_SERVICE }} \
-            --source . \
-            --region ${{ env.REGION }} \
-            --allow-unauthenticated \
-            --port 8080 \
-            --memory 256Mi \
-            --clear-base-image \
-            --set-env-vars "NEXT_PUBLIC_API_URL=https://episodic-ai-api-26273727080.us-central1.run.app"
-
-  # ── Deploy AI Orchestrator ───────────────────────────────────────────────────
-  deploy-orchestrator:
-    name: AI Orchestrator → Cloud Run
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-
-      - name: Deploy Orchestrator to Cloud Run
-        run: |
-          gcloud run deploy ${{ env.ORCHESTRATOR_SERVICE }} \
-            --source ./services/ai-orchestrator \
-            --region ${{ env.REGION }} \
-            --allow-unauthenticated \
-            --port 8000 \
-            --memory 1Gi
-
-  # ── Deploy API ───────────────────────────────────────────────────────────────
-  deploy-api:
-    name: API → Cloud Run
-    runs-on: ubuntu-latest
-    needs: deploy-orchestrator
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-
-      - name: Deploy API to Cloud Run
-        run: |
-          gcloud run deploy ${{ env.API_SERVICE }} \
-            --source ./apps/api \
-            --region ${{ env.REGION }} \
-            --allow-unauthenticated \
-            --port 3001 \
-            --memory 512Mi \
-            --set-env-vars "AI_ORCHESTRATOR_URL=https://episodic-ai-orchestrator-26273727080.us-central1.run.app"
-
-  # ── Summary ─────────────────────────────────────────────────────────────────
-  notify:
-    name: Deployment Summary
-    runs-on: ubuntu-latest
-    needs: [deploy-web, deploy-api]
-    if: always()
-    steps:
-      - name: Print URLs
-        run: |
-          echo "🌐 Web:          https://episodic-ai-web-26273727080.us-central1.run.app"
-          echo "🔧 API:          https://episodic-ai-api-26273727080.us-central1.run.app"
-          echo "🤖 Orchestrator: https://episodic-ai-orchestrator-26273727080.us-central1.run.app"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
