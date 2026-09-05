@@ -304,7 +304,10 @@ function DashboardContent() {
         setLedger(data.ledger || []);
       }
     } catch (e) {
-      setLedger([{ id: 'led-1', type: 'grant', amount: 250.0, description: 'Initial workspace credits grant', createdAt: new Date() }]);
+      setLedger([
+        { id: 'led-1', type: 'grant', amount: 18.0, description: 'Monthly Subscriber & Writer Pass coin grant', createdAt: new Date() },
+        { id: 'led-2', type: 'royalty', amount: 35.0, description: 'Pocket FM Royalty (35% on 100 Episode Unlocks)', createdAt: new Date() }
+      ]);
     }
   };
 
@@ -610,7 +613,14 @@ function DashboardContent() {
           <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`} alt="EpisodicAI Logo" className="w-9 h-9 rounded-lg object-cover shadow-md ring-1 ring-brand-violet/30" />
           <div>
             <h4 className="text-sm font-bold text-white leading-tight">Original Studio</h4>
-            <span className="text-[10px] text-brand-violet font-bold uppercase tracking-wider">Workspace Admin</span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[10px] text-brand-gold font-bold uppercase tracking-wider bg-brand-gold/15 px-1.5 py-0.5 rounded">
+                $5/mo Writer Pass
+              </span>
+              <span className="text-[10px] text-brand-cyan font-bold uppercase tracking-wider">
+                35% Royalties
+              </span>
+            </div>
           </div>
         </div>
 
@@ -1263,66 +1273,98 @@ function DashboardContent() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Pocket FM Writer Royalty Banner */}
+              <div className="p-4 rounded-xl border border-brand-gold/40 bg-brand-gold/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-black text-lg">
+                    35%
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white">Pocket FM Writer Royalty Engine Active</h4>
+                    <p className="text-xs text-gray-300">
+                      You receive 35% cash royalty ($0.35) whenever a viewer spends 9 coins ($1.00) to unlock an episode on your series.
+                    </p>
+                  </div>
+                </div>
+                <div className="text-xs font-mono font-bold text-brand-cyan bg-[#0a0c14] px-3 py-1.5 rounded-lg border border-brand-border">
+                  9 Coins = 1 Episode
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[
                   {
-                    id: 'credits_100',
-                    label: 'Starter Pack',
-                    credits: 100,
-                    price: '$9.00',
-                    description: 'Starter pack — good for ~2 short episodes',
+                    id: 'coins_9',
+                    label: '1 Episode Unlock',
+                    badge: 'BASE COINS',
+                    credits: 9,
+                    price: '$1.00',
+                    description: '9 coins — exact unlock for 1 full continuous episode',
                     popular: false,
                     accentColor: 'border-brand-border',
                   },
                   {
-                    id: 'credits_500',
-                    label: 'Creator Pack',
-                    credits: 500,
-                    price: '$39.00',
-                    description: 'Creator pack — good for a full season',
-                    popular: true,
-                    accentColor: 'border-brand-violet shadow-lg shadow-brand-violet/10',
+                    id: 'coins_165',
+                    label: 'Binge Pack',
+                    badge: '20% BONUS + NO ADS (2 WKS)',
+                    credits: 165,
+                    price: '$19.99',
+                    description: '136 + 29 free coins — unlocks ~18 episodes',
+                    popular: false,
+                    accentColor: 'border-brand-border',
                   },
                   {
-                    id: 'credits_2000',
-                    label: 'Studio Pack',
-                    credits: 2000,
-                    price: '$129.00',
-                    description: 'Studio pack — unlimited production at scale',
+                    id: 'coins_212',
+                    label: 'Pro Binge Pack',
+                    badge: '20% BONUS + NO ADS (1 MO)',
+                    credits: 212,
+                    price: '$24.99',
+                    description: '170 + 42 free coins — unlocks ~23 episodes',
+                    popular: true,
+                    accentColor: 'border-brand-gold shadow-lg shadow-brand-gold/15',
+                  },
+                  {
+                    id: 'coins_255',
+                    label: 'Ultra Binge Pack',
+                    badge: '25% BONUS + NO ADS (1 MO)',
+                    credits: 255,
+                    price: '$29.99',
+                    description: '204 + 51 free coins — unlocks ~28 episodes',
                     popular: false,
                     accentColor: 'border-brand-border',
                   }
                 ].map((pkg) => (
                   <div 
                     key={pkg.id} 
-                    className={`relative p-6 rounded-xl border bg-brand-card flex flex-col justify-between space-y-6 transition hover:scale-[1.02] duration-200 ${pkg.accentColor}`}
+                    className={`relative p-5 rounded-xl border bg-brand-card flex flex-col justify-between space-y-5 transition hover:scale-[1.02] duration-200 ${pkg.accentColor}`}
                   >
                     {pkg.popular && (
-                      <span className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-brand-violet text-[10px] font-bold text-white uppercase tracking-wider">
+                      <span className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-brand-gold text-[10px] font-black text-black uppercase tracking-wider">
                         Most Popular
                       </span>
                     )}
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <div>
-                        <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider">{pkg.label}</h4>
-                        <div className="flex items-baseline gap-1 mt-2">
-                          <span className="text-3xl font-black text-white">{pkg.credits}</span>
-                          <span className="text-xs text-gray-500 font-medium">Credits</span>
+                        <div className="text-[9px] font-mono font-bold text-brand-gold uppercase tracking-wider">{pkg.badge}</div>
+                        <h4 className="text-sm font-bold text-white mt-0.5">{pkg.label}</h4>
+                        <div className="flex items-baseline gap-1 mt-1.5">
+                          <span className="text-2xl font-black text-white">🪙 {pkg.credits}</span>
+                          <span className="text-xs text-gray-400 font-medium">Coins</span>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-brand-cyan">{pkg.price}</div>
-                      <p className="text-xs text-gray-400 leading-relaxed">{pkg.description}</p>
+                      <div className="text-xl font-bold text-brand-cyan">{pkg.price}</div>
+                      <p className="text-[11px] text-gray-400 leading-relaxed">{pkg.description}</p>
                     </div>
                     <button 
                       onClick={() => handleBuyCredits(pkg.id)} 
                       disabled={isDemoMode}
-                      className={`w-full py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                      className={`w-full py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
                         pkg.popular 
-                          ? 'bg-brand-violet hover:bg-brand-violet/90 text-white' 
+                          ? 'bg-gradient-to-r from-brand-gold to-brand-violet text-black font-extrabold hover:brightness-110' 
                           : 'bg-brand-border hover:bg-brand-border/90 border border-brand-border/80 text-white'
                       } ${isDemoMode ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      <Zap className="w-3.5 h-3.5" /> {isDemoMode ? 'Buy Credits (Sign in required)' : `Buy ${pkg.label}`}
+                      <Zap className="w-3.5 h-3.5" /> {isDemoMode ? 'Buy Coins (Sign in required)' : `Buy ${pkg.label}`}
                     </button>
                   </div>
                 ))}

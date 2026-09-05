@@ -11,32 +11,63 @@ const getStripe = () => {
   return new Stripe(key, { apiVersion: '2026-05-27.dahlia' });
 };
 
-// Credit packages
+// Pocket FM Coin Packages (9 coins per episode unlock)
 const CREDIT_PACKAGES = [
   {
+    id: 'coins_9',
+    label: '9 Coins (1 Episode)',
+    credits: 9,
+    priceUsd: 100, // $1.00 in cents
+    description: 'Single episode unlock — 9 coins ($1.00)',
+    priceId: process.env.STRIPE_PRICE_ID_9COINS,
+  },
+  {
+    id: 'coins_165',
+    label: '165 Coins (Binge Pack)',
+    credits: 165,
+    priceUsd: 1999, // $19.99
+    description: '136 + 29 free coins (20% Bonus + No Ads for 2 Weeks)',
+    priceId: process.env.STRIPE_PRICE_ID_165COINS,
+  },
+  {
+    id: 'coins_212',
+    label: '212 Coins (Pro Binge Pack)',
+    credits: 212,
+    priceUsd: 2499, // $24.99
+    description: '170 + 42 free coins (20% Bonus + No Ads for 1 Month)',
+    priceId: process.env.STRIPE_PRICE_ID_212COINS,
+    popular: true,
+  },
+  {
+    id: 'coins_255',
+    label: '255 Coins (Ultra Binge Pack)',
+    credits: 255,
+    priceUsd: 2999, // $29.99
+    description: '204 + 51 free coins (25% Bonus + No Ads for 1 Month)',
+    priceId: process.env.STRIPE_PRICE_ID_255COINS,
+  },
+  // Legacy aliases for backward compatibility
+  {
     id: 'credits_100',
-    label: '100 Credits',
-    credits: 100,
-    priceUsd: 900, // $9.00 in cents
-    description: 'Starter pack — good for ~2 short episodes',
-    priceId: process.env.STRIPE_PRICE_ID_100CR,
+    label: '9 Coins (1 Episode)',
+    credits: 9,
+    priceUsd: 100,
+    description: 'Single episode unlock — 9 coins ($1.00)',
   },
   {
     id: 'credits_500',
-    label: '500 Credits',
-    credits: 500,
-    priceUsd: 3900, // $39.00
-    description: 'Creator pack — good for a full season',
-    priceId: process.env.STRIPE_PRICE_ID_500CR,
+    label: '212 Coins (Pro Binge Pack)',
+    credits: 212,
+    priceUsd: 2499,
+    description: '170 + 42 free coins (20% Bonus + No Ads for 1 Month)',
     popular: true,
   },
   {
     id: 'credits_2000',
-    label: '2,000 Credits',
-    credits: 2000,
-    priceUsd: 12900, // $129.00
-    description: 'Studio pack — unlimited production at scale',
-    priceId: process.env.STRIPE_PRICE_ID_2000CR,
+    label: '255 Coins (Ultra Binge Pack)',
+    credits: 255,
+    priceUsd: 2999,
+    description: '204 + 51 free coins (25% Bonus + No Ads for 1 Month)',
   },
 ];
 
