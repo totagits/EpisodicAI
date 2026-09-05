@@ -7,127 +7,96 @@
 }
 
 body {
-  background-color: #05060b;
-  color: #f3f4f6;
+  background-color: #0f1117;
+  color: #e5e7eb;
   font-family: ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
 }
 
 /* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #0d0f19;
-}
-::-webkit-scrollbar-thumb {
-  background: #1f2438;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #8b5cf6;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #1a1d2e; }
+::-webkit-scrollbar-thumb { background: #2d3154; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a78bfa; }
 
-/* Glassmorphism Classes */
+/* Glassmorphism — lighter, more translucent */
 .glass-panel {
-  background: rgba(13, 15, 25, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(26, 29, 46, 0.75);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
-  background: rgba(13, 15, 25, 0.45);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(139, 92, 246, 0.1);
+  background: rgba(26, 29, 46, 0.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(167, 139, 250, 0.12);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .glass-card:hover {
-  border-color: rgba(6, 182, 212, 0.3);
-  box-shadow: 0 0 25px rgba(6, 182, 212, 0.08);
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow: 0 0 28px rgba(34, 211, 238, 0.1);
   transform: translateY(-2px);
 }
 
-/* Cinematic Glows */
-.glow-text-violet {
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-}
-.glow-text-cyan {
-  text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
-}
+/* Glow text */
+.glow-text-violet { text-shadow: 0 0 12px rgba(167, 139, 250, 0.6); }
+.glow-text-cyan   { text-shadow: 0 0 12px rgba(34, 211, 238, 0.6); }
 
-.glow-border-violet {
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
-}
-.glow-border-cyan {
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
-}
+/* Glow borders */
+.glow-border-violet { box-shadow: 0 0 18px rgba(167, 139, 250, 0.25); }
+.glow-border-cyan   { box-shadow: 0 0 18px rgba(34, 211, 238, 0.25); }
 
+/* Grid background — brighter lines */
 .sky-grid {
   background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right,  rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
 }
 
-/* Premium Floating Animations (designcode.io style) */
+/* Floating animations */
 @keyframes float {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(0.3deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  0%   { transform: translateY(0px)  rotate(0deg); }
+  50%  { transform: translateY(-10px) rotate(0.3deg); }
+  100% { transform: translateY(0px)  rotate(0deg); }
 }
-
 @keyframes float-reverse {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(8px) rotate(-0.3deg); }
+  0%   { transform: translateY(0px) rotate(0deg); }
+  50%  { transform: translateY(8px)  rotate(-0.3deg); }
   100% { transform: translateY(0px) rotate(0deg); }
 }
+.float-slow   { animation: float         9s ease-in-out infinite; }
+.float-medium { animation: float-reverse 7s ease-in-out infinite; }
+.float-fast   { animation: float         5s ease-in-out infinite; }
 
-.float-slow {
-  animation: float 9s ease-in-out infinite;
-}
-
-.float-medium {
-  animation: float-reverse 7s ease-in-out infinite;
-}
-
-.float-fast {
-  animation: float 5s ease-in-out infinite;
-}
-
-/* Linear-style border glow effects */
+/* Linear-style cards — lighter hover */
 .linear-glow-card {
   position: relative;
-  background: rgba(13, 15, 25, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  background: rgba(26, 29, 46, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .linear-glow-card:hover {
-  border-color: rgba(197, 168, 128, 0.25);
-  box-shadow: 0 10px 40px rgba(197, 168, 128, 0.04);
+  border-color: rgba(240, 192, 96, 0.3);
+  box-shadow: 0 10px 40px rgba(240, 192, 96, 0.08);
   transform: translateY(-2px);
 }
 
-/* Radial Glow Backdrops */
+/* Ambient glows — brighter radials */
 .ambient-glow-violet {
   position: absolute;
-  width: 600px;
-  height: 600px;
+  width: 650px; height: 650px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.03) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
-
 .ambient-glow-gold {
   position: absolute;
-  width: 500px;
-  height: 500px;
+  width: 550px; height: 550px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(197, 168, 128, 0.02) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(240, 192, 96, 0.05) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
-
